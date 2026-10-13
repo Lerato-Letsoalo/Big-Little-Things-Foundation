@@ -1992,3 +1992,129 @@ body {
   .mini-stat .num { font-size: 1.35rem; }
   .mini-stat .lbl { font-size: 0.6rem; }
 }
+/* ============================================================
+   DASHBOARD TABLE HORIZONTAL SCROLL — guaranteed sliding
+   ============================================================ */
+
+/* --- Make EVERY table scrollable horizontally --- */
+.data-table {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: auto !important;      /* enable horizontal scroll */
+  overflow-y: visible !important;   /* don't clip vertically */
+  -webkit-overflow-scrolling: touch !important;  /* momentum scroll on iOS */
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+/* Ensure the internal structure still behaves like a table */
+.data-table > thead { display: table-header-group; }
+.data-table > tbody { display: table-row-group; }
+.data-table > thead > tr,
+.data-table > tbody > tr { display: table-row; }
+.data-table > thead > tr > th,
+.data-table > tbody > tr > td {
+  display: table-cell;
+  white-space: nowrap;
+}
+
+/* Visible scrollbar so users know they can slide */
+.data-table::-webkit-scrollbar {
+  height: 10px;
+}
+.data-table::-webkit-scrollbar-track {
+  background: var(--gray-100);
+  border-radius: 999px;
+}
+.data-table::-webkit-scrollbar-thumb {
+  background: var(--red);
+  border-radius: 999px;
+}
+.data-table::-webkit-scrollbar-thumb:hover {
+  background: var(--red-dark);
+}
+/* Firefox */
+.data-table {
+  scrollbar-width: thin;
+  scrollbar-color: var(--red) var(--gray-100);
+}
+
+/* --- CRITICAL: prevent parents from clipping the scroll --- */
+.panel,
+.dashboard-main,
+.dashboard-main > section,
+.dashboard-layout {
+  overflow: visible;     /* important — stop clipping */
+}
+.panel {
+  overflow-x: hidden;    /* keep panels clean but let inner table scroll */
+}
+.panel > .data-table,
+.panel table.data-table,
+section > .data-table,
+section table.data-table {
+  overflow-x: auto !important;
+}
+
+/* --- Mobile: enforce the slide --- */
+@media (max-width: 700px) {
+  body, html { overflow-x: hidden !important; }
+
+  .dashboard-main {
+    max-width: 100vw;
+    overflow-x: hidden;
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  .dashboard-main > section,
+  .panel {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  /* Force minimum widths so columns don't shrink into unreadability.
+     Tables wider than the phone screen will now slide horizontally. */
+  .data-table {
+    min-width: 100%;
+    font-size: 0.78rem;
+  }
+  #volunteersTable { min-width: 520px; }
+  #hoursTable      { min-width: 640px; }
+  #eventsTable     { min-width: 560px; }
+  #donationsTable  { min-width: 720px; }
+  #enquiriesTable  { min-width: 680px; }
+  #myEventsTable   { min-width: 440px; }
+
+  #recentHoursList .data-table,
+  #overviewUpcomingList .data-table { min-width: 480px; }
+
+  /* Compact cells so more fits before the slide kicks in */
+  .data-table th,
+  .data-table td {
+    padding: 8px 10px;
+    font-size: 0.76rem;
+  }
+
+  /* Keep first column pinned readable */
+  .data-table td:first-child,
+  .data-table th:first-child {
+    min-width: 130px;
+  }
+
+  /* Buttons & selects inside cells stay small */
+  .data-table .btn {
+    padding: 6px 10px;
+    font-size: 0.72rem;
+  }
+  .data-table select,
+  .data-table .donation-status,
+  .data-table .enquiry-status {
+    padding: 4px 6px !important;
+    font-size: 0.72rem !important;
+    max-width: 120px;
+  }
+
+  /* Sidebar wrapper shouldn't clip table scroll */
+  .dashboard-layout { overflow-x: hidden; }
+}
