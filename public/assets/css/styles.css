@@ -1822,3 +1822,173 @@ body {
   .gallery-grid { grid-template-columns: 1fr; }
   .amount-grid  { grid-template-columns: 1fr; }
 }
+
+/* ============================================================
+   DASHBOARD TABLE SCROLL — universal fix (mobile)
+   Works regardless of whether the table is inside .panel,
+   a <section>, or a plain <div>.
+   ============================================================ */
+
+/* ---------- Desktop: always wrap tables in a scroll container ---------- */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  display: block;              /* turns the table into a scrollable block */
+  overflow-x: auto;            /* horizontal scroll when needed */
+  -webkit-overflow-scrolling: touch;   /* smooth scrolling on iOS */
+  max-width: 100%;             /* never wider than its parent */
+  box-sizing: border-box;
+}
+
+/* Restore normal table layout inside the scroll wrapper */
+.data-table > thead,
+.data-table > tbody {
+  display: table;
+  width: 100%;
+  table-layout: auto;
+}
+
+.data-table > thead > tr,
+.data-table > tbody > tr {
+  display: table-row;
+  width: 100%;
+}
+
+.data-table > thead > tr > th,
+.data-table > tbody > tr > td {
+  white-space: nowrap;         /* prevent cells from wrapping and squashing */
+}
+
+/* For very long cell content (email, message), allow wrapping */
+.data-table td.wrap,
+.data-table td:nth-child(2) {   /* often the email column */
+  white-space: normal;
+  max-width: 220px;
+  overflow-wrap: anywhere;
+}
+
+/* Optional: subtle scrollbar styling */
+.data-table::-webkit-scrollbar {
+  height: 8px;
+}
+.data-table::-webkit-scrollbar-thumb {
+  background: var(--gray-200);
+  border-radius: var(--radius-full);
+}
+
+/* ---------- Mobile: ensure nothing overflows the page ---------- */
+@media (max-width: 700px) {
+
+  /* Kill horizontal overflow on the whole dashboard */
+  .dashboard-layout,
+  .dashboard-main,
+  .dashboard-main > section,
+  .panel {
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+
+  /* All tables scroll horizontally within themselves */
+  .data-table {
+    min-width: 100%;             /* don't let it collapse below its container */
+    font-size: 0.78rem;
+  }
+
+  /* Tighten cells so more columns fit before scroll kicks in */
+  .data-table th,
+  .data-table td {
+    padding: 8px 10px;
+    font-size: 0.78rem;
+  }
+
+  /* Admin / volunteer table minimum widths so the columns don't get crushed */
+  #volunteersTable { min-width: 480px; }
+  #hoursTable      { min-width: 560px; }
+  #eventsTable     { min-width: 520px; }
+  #donationsTable  { min-width: 620px; }
+  #enquiriesTable  { min-width: 640px; }
+  #myEventsTable   { min-width: 440px; }
+  #teamAdminList   { min-width: 320px; }
+  #galleryAdminGrid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  #testimonialsAdminList { min-width: 100%; }
+
+  /* Text inside the table shouldn't force the table wider */
+  .data-table td,
+  .data-table th {
+    word-break: normal;
+    overflow-wrap: anywhere;
+    max-width: 180px;            /* cap individual cell width */
+  }
+
+  /* The very first column usually holds a name — let it stay readable */
+  .data-table td:first-child,
+  .data-table th:first-child {
+    min-width: 120px;
+    max-width: 160px;
+  }
+
+  /* Buttons inside table cells shrink */
+  .data-table .btn {
+    padding: 6px 10px;
+    font-size: 0.72rem;
+    white-space: nowrap;
+  }
+
+  /* Status dropdowns inside table cells shrink */
+  .data-table select.form-control,
+  .data-table .donation-status,
+  .data-table .enquiry-status {
+    padding: 4px 8px !important;
+    font-size: 0.72rem !important;
+    min-width: 90px;
+  }
+
+  /* Panels: no side padding eating into the table */
+  .panel {
+    padding: 12px;
+    margin-bottom: 12px;
+    overflow: hidden;            /* contain the scrollable table */
+  }
+
+  /* Ensure the scroll container doesn't push the panel out */
+  .panel .data-table {
+    margin: 0;
+    display: block;
+    max-width: 100%;
+  }
+
+  /* Volunteer dashboard recent hours + upcoming tables */
+  #recentHoursList,
+  #overviewUpcomingList {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+  #recentHoursList .data-table,
+  #overviewUpcomingList .data-table {
+    min-width: 480px;
+  }
+
+  /* Profile & form buttons */
+  .profile-header { padding: 16px; }
+
+  /* The mini-stat grids are already 2-per-row, tighten further */
+  .mini-stat { padding: 14px 10px; }
+  .mini-stat .num { font-size: 1.5rem; }
+  .mini-stat .lbl { font-size: 0.65rem; letter-spacing: 0.06em; }
+}
+
+/* ============================================================
+   VERY SMALL PHONES (≤ 400px) — extra tightening
+   ============================================================ */
+@media (max-width: 400px) {
+  .data-table th,
+  .data-table td {
+    padding: 6px 8px;
+    font-size: 0.72rem;
+  }
+  .data-table .btn { padding: 5px 8px; font-size: 0.68rem; }
+  .mini-stat { padding: 12px 8px; }
+  .mini-stat .num { font-size: 1.35rem; }
+  .mini-stat .lbl { font-size: 0.6rem; }
+}
