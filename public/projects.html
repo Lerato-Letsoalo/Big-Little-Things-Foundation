@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Projects — Big Little Things Foundation</title>
+  <link rel="stylesheet" href="/assets/css/styles.css">
+   <!-- Hidden Google Translate host (never visible) -->
+<div id="google_translate_element" style="position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden;" aria-hidden="true"></div>
+
+<script>
+  function googleTranslateElementInit() {
+    new google.translate.TranslateElement({
+      pageLanguage: 'en',
+      includedLanguages: 'en,af,zu,xh,nso,tn,st,ts,ss,ve',
+      layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+      autoDisplay: false
+    }, 'google_translate_element');
+  }
+</script>
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async defer></script>
+<script src="/assets/js/lang-switcher.js" defer></script>
+</head>
+<body>
+  <div id="header-mount"></div>
+
+  <main>
+    <!-- HERO -->
+    <section style="background:var(--black);color:var(--white);padding:120px 0 100px;text-align:center;">
+      <div class="container">
+        <p style="color:var(--red);font-size:0.85rem;letter-spacing:0.2em;text-transform:uppercase;font-weight:600;margin-bottom:16px;">Our Initiatives</p>
+        <h1 style="color:var(--white);font-size:clamp(2.4rem,5vw,4rem);margin-bottom:24px;">
+          Projects That Create <em style="color:var(--red);font-style:italic;font-weight:400;">Real Change</em>
+        </h1>
+        <p style="color:rgba(255,255,255,0.75);max-width:720px;margin:0 auto 40px;font-size:1.05rem;">
+          From food drives to skills development, each project is designed to address a specific community need with measurable impact.
+        </p>
+        <a href="/donate.html" class="btn btn-primary">Support a Project</a>
+      </div>
+    </section>
+
+    <!-- UPCOMING PROJECTS -->
+    <section class="container">
+      <p style="color:var(--red);font-size:0.8rem;letter-spacing:0.2em;text-transform:uppercase;font-weight:600;text-align:center;margin-bottom:12px;">Coming Soon</p>
+      <h2 class="section-title">Upcoming <em>Projects</em></h2>
+      <p class="section-subtitle">Planned community drives — dates will be confirmed closer to the time.</p>
+      <div class="projects-grid" id="upcomingEvents"></div>
+      <div id="upcomingEmptyState" class="hidden">
+        <div style="text-align:center;padding:40px 20px;">
+          <p style="color:var(--gray-400);">No upcoming drives confirmed yet. Follow us on social media for announcements.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ACTIVE PROJECTS -->
+    <section style="background:var(--gray-100);">
+      <div class="container">
+        <p style="color:var(--red);font-size:0.8rem;letter-spacing:0.2em;text-transform:uppercase;font-weight:600;text-align:center;margin-bottom:12px;">Current</p>
+        <h2 class="section-title">Active <em>Projects</em></h2>
+        <p class="section-subtitle">Community drives happening now — join us or support a cause.</p>
+        <div class="projects-grid" id="activeEvents"></div>
+        <div id="activeEmptyState" class="hidden">
+          <div style="text-align:center;padding:40px 20px;">
+            <p style="color:var(--gray-400);">No active drives right now. Check back soon — or follow us on social media for updates.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAST PROJECTS -->
+    <section class="container">
+      <p style="color:var(--red);font-size:0.8rem;letter-spacing:0.2em;text-transform:uppercase;font-weight:600;text-align:center;margin-bottom:12px;">Archive</p>
+      <h2 class="section-title">Past <em>Projects</em></h2>
+      <p class="section-subtitle">A look back at the community initiatives we've completed since 2021.</p>
+      <div class="projects-grid" id="completedEvents"></div>
+    </section>
+
+    <!-- CTA -->
+    <section style="background:var(--gray-100);">
+      <div class="container">
+        <div style="background:var(--black);color:var(--white);padding:80px 40px;border-radius:var(--radius-lg);text-align:center;max-width:900px;margin:0 auto;">
+          <h2 style="color:var(--white);font-family:var(--font-display);font-size:clamp(1.6rem,3vw,2.4rem);margin-bottom:16px;">
+            Want to Start a <em style="color:var(--red);font-style:italic;font-weight:400;">New Project?</em>
+          </h2>
+          <p style="color:rgba(255,255,255,0.75);max-width:600px;margin:0 auto 32px;">
+            Have an idea for a community initiative? Partner with us and let's make it happen together.
+          </p>
+          <a href="/contact.html" class="btn btn-primary">Get in Touch</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="footer-mount"></div>
+
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        /* ==================== UPCOMING PROJECTS ==================== */
+        const { events: upcomingEvents } = await api.get('/api/events?status=upcoming');
+        const upcomingMount = document.getElementById('upcomingEvents');
+        const upcomingEmpty = document.getElementById('upcomingEmptyState');
+
+        if (upcomingEvents.length === 0) {
+          upcomingMount.innerHTML = '';
+          upcomingEmpty.classList.remove('hidden');
+        } else {
+          upcomingMount.innerHTML = upcomingEvents.map(ev => `
+            <div class="project-card upcoming-card">
+              <div class="project-image-wrap">
+                <img src="${ev.image_path || '/assets/img/placeholder-event.jpg'}"
+                     alt="${ev.title}"
+                     onerror="this.src='/assets/img/placeholder-event.jpg'">
+                <span class="badge-overlay badge-overlay-upcoming">Upcoming</span>
+              </div>
+              <div class="project-body">
+                <h3>${ev.title}</h3>
+                ${ev.category ? `<p class="project-category">${ev.category}</p>` : ''}
+                <p class="project-desc">${ev.description || ''}</p>
+                <p class="project-date">
+                  ${ev.event_date
+                    ? new Date(ev.event_date).toLocaleDateString('en-ZA', { day: 'numeric', month: 'long', year: 'numeric' })
+                    : 'Date to be confirmed'}
+                </p>
+              </div>
+            </div>
+          `).join('');
+        }
+
+        /* ==================== ACTIVE PROJECTS ==================== */
+        const { events: activeEvents } = await api.get('/api/events?status=active');
+        const activeMount = document.getElementById('activeEvents');
+        const activeEmpty = document.getElementById('activeEmptyState');
+
+        if (activeEvents.length === 0) {
+          activeMount.innerHTML = '';
+          activeEmpty.classList.remove('hidden');
+        } else {
+          activeMount.innerHTML = activeEvents.map(ev => `
+            <div class="project-card">
+              <div class="project-image-wrap">
+                <img src="${ev.image_path || '/assets/img/placeholder-event.jpg'}"
+                     alt="${ev.title}"
+                     onerror="this.src='/assets/img/placeholder-event.jpg'">
+                <span class="badge-overlay badge-overlay-active">Active</span>
+              </div>
+              <div class="project-body">
+                <h3>${ev.title}</h3>
+                ${ev.category ? `<p class="project-category">${ev.category}</p>` : ''}
+                <p class="project-desc">${ev.description || ''}</p>
+                <p class="project-date">
+                  ${ev.event_date
+                    ? new Date(ev.event_date).toLocaleDateString('en-ZA', { day: 'numeric', month: 'long', year: 'numeric' })
+                    : 'Date to be confirmed'}
+                </p>
+              </div>
+            </div>`).join('');
+        }
+
+        /* ==================== PAST PROJECTS ==================== */
+        const { events: pastEvents } = await api.get('/api/events?status=completed');
+        const pastMount = document.getElementById('completedEvents');
+
+        if (pastEvents.length === 0) {
+          pastMount.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--gray-400);padding:40px 0;">No past projects yet.</p>';
+        } else {
+          pastMount.innerHTML = pastEvents.map(ev => `
+            <article class="past-project-card">
+              <div class="past-project-image">
+                <img src="${ev.image_path || '/assets/img/placeholder-event.jpg'}"
+                     alt="${ev.title}"
+                     onerror="this.src='/assets/img/placeholder-event.jpg'">
+                <span class="past-project-badge">Completed</span>
+              </div>
+              <div class="past-project-body">
+                <h3 class="past-project-title">${ev.title}</h3>
+                ${ev.category ? `<p class="past-project-meta">${ev.category}</p>` : ''}
+                <p class="past-project-desc">${ev.description || ''}</p>
+              </div>
+            </article>
+          `).join('');
+        }
+      } catch (e) {
+        console.warn(e);
+      }
+    });
+  </script>
+</body>
+</html>

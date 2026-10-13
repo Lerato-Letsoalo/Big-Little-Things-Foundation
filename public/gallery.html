@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gallery — Big Little Things Foundation</title>
+  <link rel="stylesheet" href="/assets/css/styles.css">
+   <!-- Hidden Google Translate host (never visible) -->
+<div id="google_translate_element" style="position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden;" aria-hidden="true"></div>
+
+<script>
+  function googleTranslateElementInit() {
+    new google.translate.TranslateElement({
+      pageLanguage: 'en',
+      includedLanguages: 'en,af,zu,xh,nso,tn,st,ts,ss,ve',
+      layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+      autoDisplay: false
+    }, 'google_translate_element');
+  }
+</script>
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async defer></script>
+<script src="/assets/js/lang-switcher.js" defer></script>
+</head>
+<body>
+  <div id="header-mount"></div>
+
+  <main>
+    <!-- HERO -->
+    <section style="background:var(--black);color:var(--white);padding:120px 0 100px;text-align:center;">
+      <div class="container">
+        <p style="color:var(--red);font-size:0.85rem;letter-spacing:0.2em;text-transform:uppercase;font-weight:600;margin-bottom:16px;">Visual Stories</p>
+        <h1 style="color:var(--white);font-size:clamp(2.4rem,5vw,4rem);margin-bottom:24px;">
+          Impact in <em style="color:var(--red);font-style:italic;font-weight:400;">Pictures</em>
+        </h1>
+        <p style="color:rgba(255,255,255,0.75);max-width:720px;margin:0 auto;font-size:1.05rem;">
+          Every photo tells the story of a community touched, a life changed, a volunteer who showed up. This is what impact looks like.
+        </p>
+      </div>
+    </section>
+
+    <!-- TABS + FILTERS -->
+    <section class="container" style="padding-top:56px;padding-bottom:32px;">
+      <div class="gallery-tabs">
+        <button class="gallery-tab active" data-tab="all">All Photos</button>
+        <button class="gallery-tab" data-tab="event">By Event</button>
+      </div>
+
+      <div id="yearFilterBar" class="gallery-filter-row"></div>
+      <div id="eventFilterBar" class="gallery-filter-row hidden"></div>
+
+      <p id="galleryCount" style="text-align:center;color:var(--gray-500);font-size:0.9rem;margin:16px 0 32px;"></p>
+    </section>
+
+    <!-- GRID -->
+    <section class="container" style="padding-top:0;">
+      <div class="gallery-grid" id="galleryGrid"></div>
+
+      <div id="galleryEmpty" class="hidden" style="text-align:center;padding:60px 20px;">
+        <p style="color:var(--gray-400);">No images found for that filter.</p>
+        <button class="btn btn-outline" id="clearFilter" style="margin-top:16px;">Show all images</button>
+      </div>
+    </section>
+  </main>
+
+  <div id="footer-mount"></div>
+
+  <!-- ==================== LIGHTBOX ==================== -->
+  <div id="lightbox" class="lightbox" aria-hidden="true" role="dialog" aria-label="Image viewer">
+    <button class="lightbox-close" id="lightboxClose" aria-label="Close viewer">×</button>
+    <button class="lightbox-nav lightbox-prev" id="lightboxPrev" aria-label="Previous image">‹</button>
+    <button class="lightbox-nav lightbox-next" id="lightboxNext" aria-label="Next image">›</button>
+
+    <div class="lightbox-stage" id="lightboxStage">
+      <img id="lightboxImage" src="" alt="">
+    </div>
+
+    <div class="lightbox-meta">
+      <p class="lightbox-counter" id="lightboxCounter"></p>
+      <h3 class="lightbox-title" id="lightboxTitle"></h3>
+    </div>
+  </div>
+
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      let allImages = [];
+      let filteredImages = [];
+      let activeTab = 'all';
+      let activeYear = 'all';
+      let activeEvent = 'all';
+      let currentIndex = 0;
+
+      const grid = document.getElementById('galleryGrid');
+      const empty = document.getElementById('galleryEmpty');
+      const countEl = document.getElementById('galleryCount');
+      const yearBar = document.getElementById('yearFilterBar');
+      const eventBar = document.getElementById('eventFilterBar');
+
+      const lightbox = document.getElementById('lightbox');
+      const lightboxImage = document.getElementById('lightboxImage');
+      const lightboxTitle = document.getElementById('lightboxTitle');
+      const lightboxCounter = document.getElementById('lightboxCounter');
+
+      /* ---------------- HELPERS ---------------- */
+      function cleanEventName(title) {
+        if (!title) return 'Other';
+        return title.replace(/\s*\(\d{4}\)\s*$/, '').trim();
+      }
+
+      function getEventNames() {
+        const set = new Set(allImages.map(i => cleanEventName(i.title)));
+        return [...set].sort();
+      }
+
+      function imgSrc(img) {
+        return img.safe_path || encodeURI(img.image_path);
+      }
+
+      /* ---------------- RENDER GRID ---------------- */
+      function renderGrid() {
+        let filtered = allImages.slice();
+
+        if (activeYear !== 'all') {
+          filtered = filtered.filter(i => String(i.year) === String(activeYear));
+        }
+        if (activeTab === 'event' && activeEvent !== 'all') {
+          filtered = filtered.filter(i => cleanEventName(i.title) === activeEvent);
+        }
+
+        filteredImages = filtered;
+
+        if (!filtered.length) {
+          grid.innerHTML = '';
+          empty.classList.remove('hidden');
+          countEl.textContent = '';
+          return;
+        }
+
+        empty.classList.add('hidden');
+
+        const label = [];
+        if (activeTab === 'event' && activeEvent !== 'all') label.push(activeEvent);
+        if (activeYear !== 'all') label.push(activeYear);
+        countEl.textContent = `${filtered.length} image${filtered.length === 1 ? '' : 's'} shown${label.length ? ' · ' + label.join(' · ') : ''}`;
+
+        grid.innerHTML = filtered.map((img, idx) => {
+          const src = imgSrc(img);
+          const onerr = "this.onerror=null;this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22300%22><rect width=%22300%22 height=%22300%22 fill=%22%23eee%22/><text x=%22150%22 y=%22150%22 text-anchor=%22middle%22 fill=%22%23999%22 font-family=%22sans-serif%22 font-size=%2216%22>Image unavailable</text></svg>'";
+          return `
+            <div class="gallery-item" data-index="${idx}">
+              <img src="${src}" alt="${img.alt_text || img.title || 'Gallery image'}" loading="lazy" onerror="${onerr}">
+              <div class="gallery-overlay">
+                ${img.title ? `<strong>${img.title}</strong>` : ''}
+                ${img.year ? `<span style="font-size:0.72rem;opacity:0.75;margin-top:4px;display:block;letter-spacing:0.1em;text-transform:uppercase;">${img.year}</span>` : ''}
+              </div>
+            </div>`;
+        }).join('');
+
+        // Attach click handlers to open lightbox
+        grid.querySelectorAll('.gallery-item').forEach(item => {
+          item.addEventListener('click', () => {
+            const idx = parseInt(item.dataset.index, 10);
+            openLightbox(idx);
+          });
+        });
+      }
+
+      /* ---------------- LIGHTBOX ---------------- */
+      function openLightbox(index) {
+        if (!filteredImages.length) return;
+        currentIndex = Math.max(0, Math.min(index, filteredImages.length - 1));
+        updateLightbox();
+        lightbox.classList.add('open');
+        lightbox.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeLightbox() {
+        lightbox.classList.remove('open');
+        lightbox.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+      }
+
+      function updateLightbox() {
+        const img = filteredImages[currentIndex];
+        if (!img) return;
+        lightboxImage.src = imgSrc(img);
+        lightboxImage.alt = img.alt_text || img.title || 'Gallery image';
+        lightboxTitle.textContent = img.title || '';
+        lightboxCounter.textContent = `${currentIndex + 1} / ${filteredImages.length}`;
+
+        // Hide nav buttons if only one image
+        document.getElementById('lightboxPrev').style.display = filteredImages.length > 1 ? '' : 'none';
+        document.getElementById('lightboxNext').style.display = filteredImages.length > 1 ? '' : 'none';
+      }
+
+      function nextImage() {
+        if (!filteredImages.length) return;
+        currentIndex = (currentIndex + 1) % filteredImages.length;
+        updateLightbox();
+      }
+
+      function prevImage() {
+        if (!filteredImages.length) return;
+        currentIndex = (currentIndex - 1 + filteredImages.length) % filteredImages.length;
+        updateLightbox();
+      }
+
+      document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
+      document.getElementById('lightboxNext').addEventListener('click', nextImage);
+      document.getElementById('lightboxPrev').addEventListener('click', prevImage);
+
+      // Click outside the image (on the dark backdrop) closes it
+      lightbox.addEventListener('click', (e) => {
+        if (e.target === lightbox || e.target.id === 'lightboxStage') closeLightbox();
+      });
+
+      // Keyboard controls
+      document.addEventListener('keydown', (e) => {
+        if (!lightbox.classList.contains('open')) return;
+        if (e.key === 'Escape') closeLightbox();
+        if (e.key === 'ArrowRight') nextImage();
+        if (e.key === 'ArrowLeft') prevImage();
+      });
+
+      // Touch swipe
+      let touchStartX = 0;
+      let touchEndX = 0;
+      lightbox.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+      }, { passive: true });
+      lightbox.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        const diff = touchStartX - touchEndX;
+        if (Math.abs(diff) > 50) {
+          if (diff > 0) nextImage();
+          else prevImage();
+        }
+      }, { passive: true });
+
+      /* ---------------- FILTERS ---------------- */
+      function buildYearFilter() {
+        const years = [...new Set(allImages.map(i => i.year).filter(Boolean))]
+          .sort((a, b) => b - a);
+
+        if (!years.length) { yearBar.innerHTML = ''; return; }
+
+        yearBar.innerHTML = `
+          <button class="year-btn ${activeYear === 'all' ? 'active' : ''}" data-year="all">All Years</button>
+          ${years.map(y => `<button class="year-btn ${activeYear === String(y) ? 'active' : ''}" data-year="${y}">${y}</button>`).join('')}
+        `;
+
+        yearBar.querySelectorAll('.year-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            activeYear = btn.dataset.year;
+            buildYearFilter();
+            renderGrid();
+          });
+        });
+      }
+
+      function buildEventFilter() {
+        const events = getEventNames();
+        if (!events.length) { eventBar.innerHTML = ''; return; }
+
+        eventBar.innerHTML = `
+          <button class="year-btn ${activeEvent === 'all' ? 'active' : ''}" data-event="all">All Events</button>
+          ${events.map(e => `<button class="year-btn ${activeEvent === e ? 'active' : ''}" data-event="${e}">${e}</button>`).join('')}
+        `;
+
+        eventBar.querySelectorAll('.year-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            activeEvent = btn.dataset.event;
+            buildEventFilter();
+            renderGrid();
+          });
+        });
+      }
+
+      document.querySelectorAll('.gallery-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          activeTab = tab.dataset.tab;
+          document.querySelectorAll('.gallery-tab').forEach(t => {
+            t.classList.toggle('active', t === tab);
+          });
+          if (activeTab === 'all') {
+            eventBar.classList.add('hidden');
+            activeEvent = 'all';
+          } else {
+            eventBar.classList.remove('hidden');
+          }
+          renderGrid();
+        });
+      });
+
+      document.getElementById('clearFilter')?.addEventListener('click', () => {
+        activeYear = 'all';
+        activeEvent = 'all';
+        activeTab = 'all';
+        document.querySelectorAll('.gallery-tab').forEach(t => {
+          t.classList.toggle('active', t.dataset.tab === 'all');
+        });
+        eventBar.classList.add('hidden');
+        buildYearFilter();
+        buildEventFilter();
+        renderGrid();
+      });
+
+      /* ---------------- LOAD ---------------- */
+      (async function loadGallery() {
+        try {
+          const res = await api.get('/api/gallery');
+          allImages = res.images || [];
+          console.log('[gallery] loaded', allImages.length, 'images');
+          buildYearFilter();
+          buildEventFilter();
+          renderGrid();
+        } catch (err) {
+          console.warn('Gallery load failed:', err);
+          grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--gray-400);">Could not load gallery.</p>';
+        }
+      })();
+    });
+  </script>
+</body>
+</html>

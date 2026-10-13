@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Volunteer Registration — Big Little Things Foundation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/css/styles.css">
+   <!-- Hidden Google Translate host (never visible) -->
+<div id="google_translate_element" style="position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden;" aria-hidden="true"></div>
+
+<script>
+  function googleTranslateElementInit() {
+    new google.translate.TranslateElement({
+      pageLanguage: 'en',
+      includedLanguages: 'en,af,zu,xh,nso,tn,st,ts,ss,ve',
+      layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+      autoDisplay: false
+    }, 'google_translate_element');
+  }
+</script>
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async defer></script>
+<script src="/assets/js/lang-switcher.js" defer></script>
+</head>
+<body>
+  <div id="header-mount"></div>
+  <main class="container" style="padding-top:60px;padding-bottom:40px;">
+    <h1 class="section-title" data-i18n="volunteer.register">Register as a Volunteer</h1>
+    <div class="form-card" style="max-width:560px;">
+      <div id="authAlert" class="alert hidden"></div>
+      <form id="registerForm">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input id="full_name" required>
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input id="email" type="email" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Phone (optional)</label>
+            <input id="phone" type="tel">
+          </div>
+          <div class="form-group">
+            <label>City (optional)</label>
+            <input id="city">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Password (min 8 characters)</label>
+          <input id="password" type="password" minlength="8" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block" data-i18n="auth.register">Register</button>
+      </form>
+      <p style="text-align:center;margin-top:16px;">
+        <span data-i18n="auth.have_account">Already have an account?</span>
+        <a href="/login.html" data-i18n="nav.login">Login</a>
+      </p>
+    </div>
+  </main>
+  <div id="footer-mount"></div>
+
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/main.js"></script>
+  <script src="/assets/js/auth.js"></script>
+</body>
+</html>

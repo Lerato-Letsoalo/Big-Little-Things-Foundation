@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — Big Little Things Foundation</title>
+  <link rel="stylesheet" href="/assets/css/styles.css">
+   <!-- Hidden Google Translate host (never visible) -->
+<div id="google_translate_element" style="position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden;" aria-hidden="true"></div>
+
+<script>
+  function googleTranslateElementInit() {
+    new google.translate.TranslateElement({
+      pageLanguage: 'en',
+      includedLanguages: 'en,af,zu,xh,nso,tn,st,ts,ss,ve',
+      layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+      autoDisplay: false
+    }, 'google_translate_element');
+  }
+</script>
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async defer></script>
+<script src="/assets/js/lang-switcher.js" defer></script>
+</head>
+<body>
+  <div id="header-mount"></div>
+
+  <main class="container" style="padding-top:100px;padding-bottom:100px;">
+    <div style="max-width:440px;margin:0 auto;">
+      <p style="color:var(--red);font-size:0.8rem;letter-spacing:0.2em;text-transform:uppercase;font-weight:600;text-align:center;margin-bottom:12px;">Welcome Back</p>
+      <h1 class="section-title" style="font-size:2rem;margin-bottom:32px;">Log <em>In</em></h1>
+
+      <div id="authAlert" class="alert hidden"></div>
+
+      <form id="loginForm" class="panel" style="padding:32px;">
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" name="email" class="form-control" autocomplete="email" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" class="form-control" autocomplete="current-password" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block btn-lg">Log In</button>
+      </form>
+
+      <p style="text-align:center;margin-top:20px;font-size:0.9rem;color:var(--gray-500);">
+        Don't have an account? <a href="/register.html" style="color:var(--red);font-weight:600;">Register as a volunteer</a>
+      </p>
+    </div>
+  </main>
+
+  <div id="footer-mount"></div>
+
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/main.js"></script>
+  <script src="/assets/js/auth.js"></script>
+</body>
+</html>

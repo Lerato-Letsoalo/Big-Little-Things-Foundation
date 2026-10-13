@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Donate — Big Little Things Foundation</title>
+  <link rel="stylesheet" href="/assets/css/styles.css">
+</head>
+<body>
+  <div id="header-mount"></div>
+
+  <main class="container" style="padding-top:60px;padding-bottom:40px;">
+    <h1 class="section-title">Make a Donation</h1>
+    <p class="section-subtitle">What would you like to donate?</p>
+
+    <div class="form-card">
+      <div id="donateAlert" class="alert hidden"></div>
+
+      <!-- Donation type selector -->
+      <div class="form-group">
+        <div class="amount-grid" id="typeGrid">
+          <button type="button" class="amount-btn" data-type="money">Money</button>
+          <button type="button" class="amount-btn" data-type="food">Food Items</button>
+          <button type="button" class="amount-btn" data-type="clothing">Clothing</button>
+          <button type="button" class="amount-btn" data-type="sanitary">Sanitary Products</button>
+        </div>
+      </div>
+
+      <form id="donateForm" enctype="multipart/form-data">
+        <input type="hidden" name="donation_type" id="donation_type">
+
+        <!-- Money-only fields -->
+        <div id="moneySection" class="hidden">
+          <div class="form-group">
+            <label>Choose an amount</label>
+            <div class="amount-grid">
+              <button type="button" class="amount-btn preset" data-amount="50">R50</button>
+              <button type="button" class="amount-btn preset" data-amount="100">R100</button>
+              <button type="button" class="amount-btn preset" data-amount="250">R250</button>
+              <button type="button" class="amount-btn preset" data-amount="500">R500</button>
+            </div>
+            <div class="form-group mt-2">
+              <label for="amount">Custom amount</label>
+              <input type="number" id="amount" name="amount" min="5" step="1" placeholder="R">
+            </div>
+          </div>
+
+          <div class="alert alert-info">
+            <strong>Banking Details</strong><br>
+            Account name: <strong>BLT Foundation</strong><br>
+            Bank: <strong>ABSA Bank</strong><br>
+            Account number: <strong>9366270023</strong><br>
+            Branch code: <strong>632005</strong>
+            <br><br>
+            <button type="button" id="copyBank" class="btn btn-outline" style="padding:6px 14px;font-size:0.8rem;">Copy details</button>
+            <p style="margin-top:10px;font-size:0.85rem;">
+              Please use an identifiable reference. Your donation is not verified until our team confirms receipt.
+            </p>
+          </div>
+        </div>
+
+        <!-- Physical donation fields -->
+        <div id="itemSection" class="hidden">
+          <div class="form-group">
+            <label>Quantity / Description</label>
+            <textarea name="quantity_description" placeholder="e.g. 5kg rice, 3 tins pilchards, 2 bags of clothing"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Upload image of donated items (optional)</label>
+            <input type="file" name="item_image" accept="image/*">
+          </div>
+        </div>
+
+        <!-- Donor details -->
+        <div class="form-row">
+          <div class="form-group">
+            <label>Your Name</label>
+            <input name="donor_name" required placeholder="Full name">
+          </div>
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" name="donor_email" required placeholder="your@email.com">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>City</label>
+            <input name="city" placeholder="e.g. Pretoria">
+          </div>
+          <div class="form-group">
+            <label>Phone (optional)</label>
+            <input name="donor_phone" type="tel">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Message (optional)</label>
+          <textarea name="message" placeholder="A message of support..."></textarea>
+        </div>
+
+        <!-- Proof of transaction — MONEY ONLY -->
+        <div id="proofSection" class="form-group hidden">
+          <label>Upload proof of transaction</label>
+          <input type="file" name="proof" accept="image/*,application/pdf">
+        </div>
+
+        <div class="form-group" style="display:flex;align-items:center;gap:10px;">
+          <input type="checkbox" name="anonymous" id="anonymous" value="true" style="width:auto;">
+          <label for="anonymous" style="margin:0;font-weight:500;">Make this donation anonymous</label>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Submit Donation</button>
+      </form>
+    </div>
+  </main>
+
+  <div id="footer-mount"></div>
+
+  <!-- ============================================================
+       Hidden Google Translate host — MUST live in <body>, not <head>
+       ============================================================ -->
+  <div id="google_translate_element"
+       style="position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden;"
+       aria-hidden="true"></div>
+
+  <!-- Page scripts first (so main.js builds the header before the switcher) -->
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/main.js"></script>
+  <script src="/assets/js/donate.js"></script>
+
+  <!-- Then Google Translate + the custom switcher -->
+  <script>
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({
+        pageLanguage: 'en',
+        includedLanguages: 'en,af,zu,xh,nso,tn,st,ts,ss,ve',
+        layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+        autoDisplay: false
+      }, 'google_translate_element');
+    }
+  </script>
+  <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async defer></script>
+  <script src="/assets/js/lang-switcher.js" defer></script>
+</body>
+</html>

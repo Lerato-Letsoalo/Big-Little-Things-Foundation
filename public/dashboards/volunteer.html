@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Volunteer Dashboard — Big Little Things Foundation</title>
+  <link rel="stylesheet" href="/assets/css/styles.css">
+</head>
+<body>
+  <!-- Mobile hamburger -->
+  <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle navigation">☰</button>
+
+  <!-- Backdrop -->
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+  <div class="dashboard-layout">
+    <aside class="dashboard-sidebar" id="dashboardSidebar">
+      <div class="logo-text">
+        Big Little Things
+        <small>Volunteer Portal</small>
+      </div>
+      <ul>
+        <li><a href="#" class="active" data-section="overview" data-short="Home">Overview</a></li>
+        <li><a href="#" data-section="log" data-short="Log">Log Event</a></li>
+        <li><a href="#" data-section="events" data-short="Events">My Events</a></li>
+        <li><a href="#" data-section="certificates" data-short="Certs">Certificates</a></li>
+        <li><a href="#" data-section="upcoming" data-short="Soon">Upcoming Events</a></li>
+        <li><a href="#" data-section="profile" data-short="Me">My Profile</a></li>
+        <li><a href="#" id="logoutBtn" data-short="Exit">Logout</a></li>
+      </ul>
+    </aside>
+
+    <main class="dashboard-main">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;">
+        <button class="desktop-collapse-btn" id="desktopCollapse" aria-label="Collapse sidebar" title="Collapse sidebar">☰</button>
+        <span></span>
+      </div>
+
+      <!-- ==================== OVERVIEW ==================== -->
+      <section id="overviewSection">
+        <div class="welcome-banner">
+          <h1 style="margin-bottom:8px;">Welcome back, <em id="volName"></em></h1>
+          <p style="color:var(--gray-500);max-width:640px;">
+            Keep making an impact — log your participation in a volunteer event and access your volunteer certificate when it becomes available.
+          </p>
+          <div style="margin-top:20px;">
+            <button class="btn btn-primary" id="quickLogBtn">+ Log Your Volunteer Event</button>
+          </div>
+        </div>
+
+        <div class="stat-row" style="margin-top:32px;">
+          <div class="mini-stat">
+            <div class="num" id="statTotalLogged">0</div>
+            <div class="lbl">Total Events Logged</div>
+          </div>
+          <div class="mini-stat">
+            <div class="num" id="statAttended">0</div>
+            <div class="lbl">Events Attended</div>
+          </div>
+          <div class="mini-stat">
+            <div class="num" id="statCerts">0</div>
+            <div class="lbl">Certificates Earned</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Recent Hours Logged</h2>
+          <div id="recentHoursList">
+            <p style="color:var(--gray-400);">Loading...</p>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Upcoming Events</h2>
+          <div id="overviewUpcomingList">
+            <p style="color:var(--gray-400);">Loading...</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== LOG EVENT ==================== -->
+      <section id="logSection" class="hidden">
+        <h1>Log New Volunteer <em>Event</em></h1>
+        <div class="panel">
+          <div id="logAlert" class="alert hidden"></div>
+          <form id="logEventForm">
+            <div class="form-group">
+              <label for="eventName">Event Name *</label>
+              <input type="text" id="eventName" class="form-control" placeholder="e.g. Community Food Drive" required>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="eventDate">Date *</label>
+                <input type="date" id="eventDate" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label for="hoursWorked">Hours Worked *</label>
+                <input type="number" id="hoursWorked" class="form-control" step="0.5" min="0.5" placeholder="e.g. 4" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="eventLocation">Location</label>
+              <input type="text" id="eventLocation" class="form-control" placeholder="e.g. Pretoria Central">
+            </div>
+
+            <div class="form-group">
+              <label for="eventNotes">Description / Notes</label>
+              <textarea id="eventNotes" class="form-control" rows="4" placeholder="Briefly describe your contribution..."></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg">Submit Attended Event for Approval</button>
+            <p style="color:var(--gray-500);font-size:0.85rem;margin-top:12px;">
+              Hours are reviewed by an admin within 24 hours.
+            </p>
+          </form>
+        </div>
+      </section>
+
+      <!-- ==================== MY EVENTS ==================== -->
+      <section id="eventsSection" class="hidden">
+        <h1>All My <em>Events</em></h1>
+        <div class="panel">
+          <table class="data-table" id="myEventsTable">
+            <thead>
+              <tr>
+                <th>Event</th>
+                <th>Date</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td colspan="3" style="text-align:center;color:var(--gray-400);padding:32px;">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ==================== CERTIFICATES ==================== -->
+      <section id="certificatesSection" class="hidden">
+        <h1>My <em>Certificates</em></h1>
+        <div id="certsList">
+          <p style="color:var(--gray-400);">Loading...</p>
+        </div>
+      </section>
+
+      <!-- ==================== UPCOMING EVENTS ==================== -->
+      <section id="upcomingSection" class="hidden">
+        <h1>Upcoming <em>Events</em></h1>
+        <div id="upcomingFullList">
+          <p style="color:var(--gray-400);">Loading...</p>
+        </div>
+      </section>
+
+      <!-- ==================== PROFILE ==================== -->
+      <section id="profileSection" class="hidden">
+        <h1>My <em>Profile</em></h1>
+
+        <div class="profile-header panel">
+          <div class="profile-avatar" id="profileInitials">LD</div>
+          <div style="flex:1;">
+            <h2 style="margin-bottom:4px;" id="profileDisplayName">Loading...</h2>
+            <p style="color:var(--red);font-weight:600;font-size:0.8rem;letter-spacing:0.1em;text-transform:uppercase;margin:0;">Volunteer</p>
+          </div>
+        </div>
+
+        <div class="stat-row">
+          <div class="mini-stat">
+            <div class="num" id="profileTotalHours">0</div>
+            <div class="lbl">Total Hours</div>
+          </div>
+          <div class="mini-stat">
+            <div class="num" style="color:#16A34A;">Active</div>
+            <div class="lbl">Status</div>
+          </div>
+          <div class="mini-stat">
+            <div class="num" id="profileMemberSince">—</div>
+            <div class="lbl">Member Since</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--gray-200);">
+            <h2 style="margin:0;padding:0;border:none;">Edit Profile</h2>
+          </div>
+
+          <div id="profileAlert" class="alert hidden"></div>
+
+          <form id="profileForm">
+            <div class="form-group">
+              <label for="profFullName">Full Name</label>
+              <input type="text" id="profFullName" class="form-control">
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="profEmail">Email</label>
+                <input type="email" id="profEmail" class="form-control" disabled style="background:var(--gray-100);color:var(--gray-500);">
+              </div>
+              <div class="form-group">
+                <label for="profPhone">Phone</label>
+                <input type="tel" id="profPhone" class="form-control">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="profCity">City</label>
+                <input type="text" id="profCity" class="form-control" placeholder="Pretoria">
+              </div>
+              <div class="form-group">
+                <label for="profSkills">Skills / Interests</label>
+                <input type="text" id="profSkills" class="form-control" placeholder="e.g. Cooking, Driving, Teaching">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="profAbout">About Me</label>
+              <textarea id="profAbout" class="form-control" rows="4" placeholder="Tell us a bit about yourself..."></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+          </form>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/volunteer.js"></script>
+  <script>
+    /* ==================== SIDEBAR TOGGLE (volunteer) ==================== */
+    (function setupSidebar() {
+      const sidebar = document.getElementById('dashboardSidebar');
+      const toggle = document.getElementById('sidebarToggle');
+      const backdrop = document.getElementById('sidebarBackdrop');
+      const desktopBtn = document.getElementById('desktopCollapse');
+
+      function openSidebar() {
+        sidebar.classList.add('open');
+        backdrop.classList.add('show');
+      }
+      function closeSidebar() {
+        sidebar.classList.remove('open');
+        backdrop.classList.remove('show');
+      }
+      function toggleSidebar() {
+        if (sidebar.classList.contains('open')) closeSidebar();
+        else openSidebar();
+      }
+
+      toggle?.addEventListener('click', toggleSidebar);
+      backdrop?.addEventListener('click', closeSidebar);
+
+      sidebar.querySelectorAll('a[data-section]').forEach(link => {
+        link.addEventListener('click', () => {
+          if (window.innerWidth <= 900) closeSidebar();
+        });
+      });
+
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') closeSidebar();
+      });
+
+      window.addEventListener('resize', () => {
+        if (window.innerWidth > 900) {
+          sidebar.classList.remove('open');
+          backdrop.classList.remove('show');
+        }
+      });
+
+      let collapsed = localStorage.getItem('blt_volunteer_sidebar_collapsed') === '1';
+      if (collapsed) document.body.classList.add('sidebar-collapsed');
+      desktopBtn?.addEventListener('click', () => {
+        collapsed = !collapsed;
+        document.body.classList.toggle('sidebar-collapsed', collapsed);
+        localStorage.setItem('blt_volunteer_sidebar_collapsed', collapsed ? '1' : '0');
+        desktopBtn.setAttribute('aria-label', collapsed ? 'Expand sidebar' : 'Collapse sidebar');
+      });
+    })();
+  </script>
+</body>
+</html>

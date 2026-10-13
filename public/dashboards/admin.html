@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — Big Little Things Foundation</title>
+  <link rel="stylesheet" href="/assets/css/styles.css">
+</head>
+<body>
+  <!-- Mobile hamburger -->
+  <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle navigation">☰</button>
+
+  <!-- Backdrop -->
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+  <div class="dashboard-layout">
+    <aside class="dashboard-sidebar" id="dashboardSidebar">
+      <div class="logo-text">
+        Big Little Things
+        <small>Admin Portal</small>
+      </div>
+      <ul>
+        <li><a href="#" class="active" data-section="overview" data-short="Dash">Dashboard</a></li>
+        <li><a href="#" data-section="team" data-short="Team">Team</a></li>
+        <li><a href="#" data-section="volunteers" data-short="Vols">Volunteers</a></li>
+        <li><a href="#" data-section="hours" data-short="Events">Event Submissions</a></li>
+        <li><a href="#" data-section="events" data-short="Drives">Drives</a></li>
+        <li><a href="#" data-section="donations" data-short="Dons">Donations</a></li>
+        <li><a href="#" data-section="gallery" data-short="Pics">Gallery</a></li>
+        <li><a href="#" data-section="testimonials" data-short="Quotes">Testimonials</a></li>
+        <li><a href="#" data-section="enquiries" data-short="Msg">Enquiries</a></li>
+        <li><a href="#" id="logoutBtn" data-short="Exit">Logout</a></li>
+      </ul>
+    </aside>
+
+    <main class="dashboard-main">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;">
+        <button class="desktop-collapse-btn" id="desktopCollapse" aria-label="Collapse sidebar" title="Collapse sidebar">☰</button>
+        <h1 style="margin:0;">Welcome, <em id="adminName">Admin</em></h1>
+      </div>
+
+      <!-- ==================== OVERVIEW ==================== -->
+      <section id="overviewSection">
+        <div class="stat-row">
+          <div class="mini-stat">
+            <div class="num" id="statVolunteers">0</div>
+            <div class="lbl">Total Volunteers</div>
+          </div>
+          <div class="mini-stat">
+            <div class="num" id="statActiveProjects">0</div>
+            <div class="lbl">Active &amp; Upcoming</div>
+          </div>
+          <div class="mini-stat">
+            <div class="num" id="statPendingHours">0</div>
+            <div class="lbl">Pending Approvals</div>
+          </div>
+          <div class="mini-stat">
+            <div class="num" id="statNewRegs">0</div>
+            <div class="lbl">New Registrations (30d)</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Recent Donations</h2>
+          <div id="recentDonationsList">
+            <p style="color:var(--gray-400);">Loading...</p>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Recent Volunteer Registrations</h2>
+          <div id="recentVolunteersList">
+            <p style="color:var(--gray-400);">Loading...</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== TEAM ==================== -->
+      <section id="teamSection" class="panel hidden">
+        <h2>Team Members</h2>
+        <div id="teamAdminList"></div>
+
+        <h3>Add / Update Team Member</h3>
+        <form id="teamForm" enctype="multipart/form-data">
+          <input type="hidden" id="teamId">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Name</label>
+              <input type="text" id="tName" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label>Role</label>
+              <input type="text" id="tRole" class="form-control" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Bio</label>
+            <textarea id="tBio" class="form-control" rows="4" required></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Image Alt Text</label>
+              <input type="text" id="tAlt" class="form-control">
+            </div>
+            <div class="form-group">
+              <label>Display Order</label>
+              <input type="number" id="tOrder" class="form-control" value="0">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Photo</label>
+            <input type="file" id="tImage" class="form-control" accept="image/*">
+          </div>
+          <button type="submit" class="btn btn-primary">Save</button>
+          <button type="button" class="btn btn-outline" id="resetTeam">Reset</button>
+        </form>
+      </section>
+
+      <!-- ==================== VOLUNTEERS ==================== -->
+      <section id="volunteersSection" class="panel hidden">
+        <h2>Volunteers</h2>
+        <table class="data-table" id="volunteersTable">
+          <thead>
+            <tr>
+              <th>Volunteer Name</th>
+              <th>City</th>
+              <th>Total Hours</th>
+              <th>Date Joined</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+      <!-- ==================== EVENT SUBMISSIONS ==================== -->
+      <section id="hoursSection" class="panel hidden">
+        <h2>Event Submissions from Volunteers</h2>
+        <p style="color:var(--gray-500);font-size:0.9rem;margin-top:-8px;margin-bottom:20px;">
+          Approve a volunteer's event to release their certificate automatically.
+        </p>
+        <table class="data-table" id="hoursTable">
+          <thead>
+            <tr>
+              <th>Volunteer</th>
+              <th>Event</th>
+              <th>Date</th>
+              <th>Hours</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+      <!-- ==================== EVENTS ==================== -->
+      <section id="eventsSection" class="panel hidden">
+        <h2>Community Drives</h2>
+        <form id="eventForm" enctype="multipart/form-data">
+          <input type="hidden" id="eventId">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Title</label>
+              <input type="text" id="evTitle" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label>Category</label>
+              <input type="text" id="evCategory" class="form-control" placeholder="e.g. 2026 · Tshwane Haven">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <textarea id="evDesc" class="form-control" rows="3"></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Status</label>
+              <select id="evStatus" class="form-control">
+                <option value="upcoming">Upcoming</option>
+                <option value="active">Active</option>
+                <option value="completed">Completed</option>
+                <option value="archived">Archived</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Date (leave blank for TBC)</label>
+              <input type="date" id="evDate" class="form-control">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Image</label>
+            <input type="file" id="evImage" class="form-control" accept="image/*">
+          </div>
+          <button type="submit" class="btn btn-primary">Save Drive</button>
+          <button type="button" class="btn btn-outline" id="resetEvent">Reset</button>
+        </form>
+
+        <h3>All Drives</h3>
+        <table class="data-table" id="eventsTable">
+          <thead>
+            <tr><th>Title</th><th>Status</th><th>Date</th><th>Actions</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+      <!-- ==================== DONATIONS ==================== -->
+      <section id="donationsSection" class="panel hidden">
+        <h2>Add Donation</h2>
+        <p style="color:var(--gray-500);font-size:0.9rem;margin-top:-8px;margin-bottom:20px;">
+          Record a donation received offline, or one that was submitted through the public form.
+        </p>
+
+        <div id="donationAddAlert" class="alert hidden"></div>
+
+        <form id="addDonationForm" enctype="multipart/form-data">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Donor Name</label>
+              <input type="text" id="dDonorName" class="form-control" placeholder="Leave blank for anonymous">
+            </div>
+            <div class="form-group">
+              <label>Donor Email</label>
+              <input type="email" id="dDonorEmail" class="form-control" placeholder="optional">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Type</label>
+              <select id="dType" class="form-control" required>
+                <option value="">Select type…</option>
+                <option value="money">Money</option>
+                <option value="food">Food Items</option>
+                <option value="clothing">Clothing</option>
+                <option value="sanitary">Sanitary Products</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>City</label>
+              <input type="text" id="dCity" class="form-control" placeholder="e.g. Pretoria">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group" id="dAmountWrap">
+              <label>Amount (ZAR)</label>
+              <input type="number" id="dAmount" class="form-control" step="0.01" min="0" placeholder="e.g. 250">
+            </div>
+            <div class="form-group" id="dItemsWrap">
+              <label>Items Description</label>
+              <input type="text" id="dItems" class="form-control" placeholder="e.g. 5kg rice, 3 tins pilchards">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Message / Notes (optional)</label>
+            <textarea id="dMessage" class="form-control" rows="2"></textarea>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Upload proof / image (optional)</label>
+              <input type="file" id="dProof" class="form-control" accept="image/*,application/pdf">
+            </div>
+            <div class="form-group">
+              <label>Status</label>
+              <select id="dStatus" class="form-control">
+                <option value="verified">Verified</option>
+                <option value="pending_verification">Pending</option>
+                <option value="received">Received</option>
+                <option value="collection_arranged">Collection arranged</option>
+                <option value="completed">Completed</option>
+                <option value="rejected">Rejected</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group" style="display:flex;align-items:center;gap:10px;">
+            <input type="checkbox" id="dAnonymous" style="width:auto;">
+            <label for="dAnonymous" style="margin:0;">Mark as anonymous</label>
+          </div>
+
+          <button type="submit" class="btn btn-primary">Add Donation</button>
+        </form>
+
+        <h3>All Donations</h3>
+        <table class="data-table" id="donationsTable">
+          <thead>
+            <tr>
+              <th>Donor</th>
+              <th>Type</th>
+              <th>Amount / Items</th>
+              <th>Status</th>
+              <th>Proof</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+      <!-- ==================== GALLERY ==================== -->
+      <section id="gallerySection" class="panel hidden">
+        <h2>Gallery</h2>
+        <form id="galleryForm" enctype="multipart/form-data">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Title / Event *</label>
+              <input type="text" id="gTitle" class="form-control" required
+                     placeholder="e.g. Spring Drive – Tshwane Haven (2026)">
+            </div>
+            <div class="form-group">
+              <label>Caption (optional)</label>
+              <input type="text" id="gCaption" class="form-control">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Image *</label>
+            <input type="file" id="gImage" class="form-control" accept="image/*" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Upload</button>
+        </form>
+
+        <h3>All Images</h3>
+        <div id="galleryAdminGrid" class="gallery-grid"></div>
+      </section>
+
+      <!-- ==================== TESTIMONIALS ==================== -->
+      <section id="testimonialsSection" class="panel hidden">
+        <h2>Testimonials</h2>
+        <form id="testimonialForm">
+          <input type="hidden" id="tstId">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Author</label>
+              <input type="text" id="tstAuthor" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label>Event Label</label>
+              <input type="text" id="tstEvent" class="form-control">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Content</label>
+            <textarea id="tstContent" class="form-control" rows="4" required></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Status</label>
+              <select id="tstStatus" class="form-control">
+                <option value="draft">Draft</option>
+                <option value="approved">Approved</option>
+                <option value="published">Published</option>
+                <option value="rejected">Rejected</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Display Order</label>
+              <input type="number" id="tstOrder" class="form-control" value="0">
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary">Save</button>
+          <button type="button" class="btn btn-outline" id="resetTestimonial">Reset</button>
+        </form>
+
+        <h3>All Testimonials</h3>
+        <div id="testimonialsAdminList"></div>
+      </section>
+
+      <!-- ==================== ENQUIRIES ==================== -->
+      <section id="enquiriesSection" class="panel hidden">
+        <h2>Contact Enquiries</h2>
+        <table class="data-table" id="enquiriesTable">
+          <thead>
+            <tr>
+              <th>Name</th><th>Email</th><th>Subject</th><th>Message</th><th>Status</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+    </main>
+  </div>
+
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/admin.js"></script>
+  <script>
+    /* ==================== SIDEBAR TOGGLE (admin) ==================== */
+    (function setupSidebar() {
+      const sidebar = document.getElementById('dashboardSidebar');
+      const toggle = document.getElementById('sidebarToggle');
+      const backdrop = document.getElementById('sidebarBackdrop');
+      const desktopBtn = document.getElementById('desktopCollapse');
+
+      function openSidebar() {
+        sidebar.classList.add('open');
+        backdrop.classList.add('show');
+      }
+      function closeSidebar() {
+        sidebar.classList.remove('open');
+        backdrop.classList.remove('show');
+      }
+      function toggleSidebar() {
+        if (sidebar.classList.contains('open')) closeSidebar();
+        else openSidebar();
+      }
+
+      toggle?.addEventListener('click', toggleSidebar);
+      backdrop?.addEventListener('click', closeSidebar);
+
+      // Close when clicking a nav link (mobile only)
+      sidebar.querySelectorAll('a[data-section]').forEach(link => {
+        link.addEventListener('click', () => {
+          if (window.innerWidth <= 900) closeSidebar();
+        });
+      });
+
+      // Close on Escape
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') closeSidebar();
+      });
+
+      // Reset state on resize
+      window.addEventListener('resize', () => {
+        if (window.innerWidth > 900) {
+          sidebar.classList.remove('open');
+          backdrop.classList.remove('show');
+        }
+      });
+
+      // Desktop collapse toggle
+      let collapsed = localStorage.getItem('blt_admin_sidebar_collapsed') === '1';
+      if (collapsed) document.body.classList.add('sidebar-collapsed');
+      desktopBtn?.addEventListener('click', () => {
+        collapsed = !collapsed;
+        document.body.classList.toggle('sidebar-collapsed', collapsed);
+        localStorage.setItem('blt_admin_sidebar_collapsed', collapsed ? '1' : '0');
+        desktopBtn.setAttribute('aria-label', collapsed ? 'Expand sidebar' : 'Collapse sidebar');
+      });
+    })();
+  </script>
+</body>
+</html>

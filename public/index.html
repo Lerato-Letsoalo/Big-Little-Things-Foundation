@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Big Little Things Foundation — Small Acts. Big Impact.</title>
+  <meta name="description" content="Big Little Things Foundation — a South African nonprofit building a compassionate, empowered country through youth-driven community initiatives.">
+  <link rel="stylesheet" href="/assets/css/styles.css">
+  <link rel="icon" href="/assets/img/blt-logo.jpeg">
+  <!-- Hidden Google Translate host (never visible) -->
+<div id="google_translate_element" style="position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden;" aria-hidden="true"></div>
+
+<script>
+  function googleTranslateElementInit() {
+    new google.translate.TranslateElement({
+      pageLanguage: 'en',
+      includedLanguages: 'en,af,zu,xh,nso,tn,st,ts,ss,ve',
+      layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+      autoDisplay: false
+    }, 'google_translate_element');
+  }
+</script>
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async defer></script>
+<script src="/assets/js/lang-switcher.js" defer></script>
+</head>
+<body>
+  <div id="header-mount"></div>
+
+  <main>
+    <!-- HERO with background video -->
+    <section class="hero">
+      <video autoplay muted loop playsinline poster="/assets/img/hero-poster.jpg">
+        <source src="/assets/video/hero.mp4" type="video/mp4">
+      </video>
+      <div class="hero-content">
+        <h1>Small Acts. <em>Big Impact.</em></h1>
+        <p>Together we build a compassionate South Africa — one community, one child, one act of kindness at a time.</p>
+        <div class="hero-actions">
+          <a href="/volunteer.html" class="btn btn-primary">Volunteer With Us</a>
+          <a href="/donate.html" class="btn btn-outline" style="color:var(--white);border-color:rgba(255,255,255,0.35);">Donate Now</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- WHO WE ARE — two column: text left, image right -->
+    <section class="container">
+      <div class="who-we-are-grid">
+        <!-- LEFT: text -->
+        <div class="who-we-are-text">
+          <p style="color:var(--red);font-size:0.8rem;letter-spacing:0.2em;text-transform:uppercase;font-weight:600;margin-bottom:12px;">Who We Are</p>
+          <h2 class="section-title" style="text-align:left;margin-bottom:24px;">
+            Driven by Youth,<br><em>Powered by Compassion</em>
+          </h2>
+
+          <p style="margin-bottom:18px;">
+            Big Little Things Foundation was established in 2021 by Iman Cassiem, Chloe Grotewold and Lehlohonolo Mgedeza with a simple intention: to uplift those in need, starting with something as essential as sanitary care. Today we provide everyday essentials — clothing, food, and toiletries — to under-resourced communities across South Africa.
+          </p>
+          <p style="margin-bottom:28px;">
+            Youth involvement is a cornerstone of every project. By engaging young volunteers in each of our drives, we cultivate a culture of giving, civic responsibility, and meaningful connection.
+          </p>
+
+          <!-- Value pills -->
+          <div class="who-we-are-pills">
+            <span class="pill">Community First</span>
+            <span class="pill">Youth-Led</span>
+            <span class="pill">Compassionate</span>
+            <span class="pill">Impact-Driven</span>
+          </div>
+
+          <div style="margin-top:32px;">
+            <a href="/about.html" class="btn btn-primary btn-lg">Learn Our Story</a>
+          </div>
+        </div>
+
+        <!-- RIGHT: image -->
+        <div class="who-we-are-image">
+          <img src="/assets/img/who-we-are.jpeg"
+               alt="Big Little Things Foundation volunteers working with the community"
+               onerror="this.style.display='none';this.parentElement.classList.add('who-we-are-image--empty')">
+        </div>
+      </div>
+    </section>
+
+    <!-- UPCOMING DRIVES -->
+    <section style="background:var(--gray-100);">
+      <div class="container">
+        <p style="color:var(--red);font-size:0.8rem;letter-spacing:0.2em;text-transform:uppercase;font-weight:600;text-align:center;margin-bottom:12px;">Upcoming Drives</p>
+        <h2 class="section-title">Where We <em>Need You</em></h2>
+        <p class="section-subtitle">Join us at our next community initiatives.</p>
+        <div class="projects-grid" id="upcomingEvents"></div>
+      </div>
+    </section>
+
+    <!-- MEET THE TEAM -->
+    <section class="container">
+      <p style="color:var(--red);font-size:0.8rem;letter-spacing:0.2em;text-transform:uppercase;font-weight:600;text-align:center;margin-bottom:12px;">The Faces Behind the Foundation</p>
+      <h2 class="section-title">Meet Our <em>Team</em></h2>
+      <div class="team-grid" id="teamGrid"></div>
+    </section>
+
+    <!-- TESTIMONIALS (compact) -->
+    <section class="testimonial-section">
+      <div class="container">
+        <h2 class="section-title" style="font-size:clamp(1.4rem,2.4vw,1.9rem);">What Our <em>Volunteers Say</em></h2>
+        <div id="testimonialMount"></div>
+      </div>
+    </section>
+
+       <!-- GALLERY PREVIEW -->
+    <section class="container">
+      <p style="color:var(--red);font-size:0.8rem;letter-spacing:0.2em;text-transform:uppercase;font-weight:600;text-align:center;margin-bottom:12px;">Gallery</p>
+      <h2 class="section-title">Moments of <em>Impact</em></h2>
+      <p class="section-subtitle">A glimpse into our community drives and volunteer days.</p>
+
+      <div class="gallery-grid" id="galleryPreview" style="grid-template-columns:repeat(auto-fill,minmax(280px,1fr));"></div>
+
+      <div style="text-align:center;margin-top:40px;">
+        <a href="/gallery.html" class="btn btn-primary btn-lg">Explore Full Gallery</a>
+      </div>
+    </section>
+
+    <!-- JOIN THE MOVEMENT CTA -->
+    <section class="container">
+      <div style="background:var(--black);color:var(--white);padding:80px 40px;border-radius:var(--radius-lg);text-align:center;max-width:900px;margin:0 auto;">
+        <p style="color:var(--red);font-size:0.8rem;letter-spacing:0.2em;text-transform:uppercase;font-weight:600;margin-bottom:12px;">Join the Movement</p>
+        <h2 style="color:var(--white);font-family:var(--font-display);font-size:clamp(1.6rem,3vw,2.4rem);margin-bottom:20px;">
+          Ready to Make a <em style="color:var(--red);font-style:italic;font-weight:400;">Difference?</em>
+        </h2>
+        <p style="color:rgba(255,255,255,0.75);max-width:600px;margin:0 auto 32px;">
+          Whether you volunteer your time or donate to a cause, every contribution creates ripples of change. Join our community of changemakers today.
+        </p>
+        <div class="hero-actions">
+          <a href="/volunteer.html" class="btn btn-primary btn-lg">Become a Volunteer</a>
+          <a href="/donate.html" class="btn btn-outline btn-lg" style="color:var(--white);border-color:rgba(255,255,255,0.35);">Donate Today</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="footer-mount"></div>
+
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/main.js"></script>
+  <script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    try {
+      await blt.renderEvents('#upcomingEvents', 'upcoming');
+      await blt.renderTeam('#teamGrid');
+      await blt.renderTestimonials('#testimonialMount');
+      await blt.renderGallery('#galleryPreview', 6);
+    } catch (e) { console.warn(e); }
+  });
+</script>
+  
+  </script>
+</body>
+</html>
