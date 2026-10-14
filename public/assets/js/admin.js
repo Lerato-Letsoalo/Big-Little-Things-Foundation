@@ -1,6 +1,6 @@
 /* ============================================================
    ADMIN DASHBOARD — Browser-side logic
-   No require, no imports — uses window.api
+   Uses window.api, window.confirmModal, window.toastSuccess, window.toastError
    ============================================================ */
 console.log('[admin.js] loaded');
 
@@ -139,10 +139,19 @@ async function loadTeam() {
       document.getElementById('tOrder').value = 0;
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
+
     document.querySelectorAll('.delete-team').forEach(btn => btn.onclick = async () => {
-      if (!confirm('Delete this team member?')) return;
-      await api.del(`/api/team/${btn.dataset.id}`);
-      loadTeam();
+      const confirmed = await confirmModal('Delete this team member?', {
+        title: 'Delete team member',
+        danger: true,
+        okLabel: 'Delete'
+      });
+      if (!confirmed) return;
+      try {
+        await api.del(`/api/team/${btn.dataset.id}`);
+        toastSuccess('Team member deleted.');
+        loadTeam();
+      } catch (err) { toastError('Delete failed: ' + err.message); }
     });
   } catch (err) { console.warn('[admin.js] team load failed:', err); }
 }
@@ -164,8 +173,9 @@ document.getElementById('teamForm')?.addEventListener('submit', async (e) => {
     else await api.postForm('/api/team', fd);
     document.getElementById('teamForm').reset();
     document.getElementById('teamId').value = '';
+    toastSuccess(id ? 'Team member updated.' : 'Team member added.');
     loadTeam();
-  } catch (err) { alert('Save failed: ' + err.message); }
+  } catch (err) { toastError('Save failed: ' + err.message); }
 });
 
 document.getElementById('resetTeam')?.addEventListener('click', () => {
@@ -194,18 +204,22 @@ async function loadVolunteers() {
       </tr>`).join('');
 
     document.querySelectorAll('.remove-volunteer').forEach(btn => btn.onclick = async () => {
-      if (!confirm(`Remove volunteer "${btn.dataset.name}"? This cannot be undone.`)) return;
+      const confirmed = await confirmModal(
+        `Remove volunteer "${btn.dataset.name}"? This cannot be undone.`,
+        { title: 'Remove volunteer', danger: true, okLabel: 'Remove' }
+      );
+      if (!confirmed) return;
       try {
         await api.del(`/api/volunteers/${btn.dataset.id}`);
+        toastSuccess('Volunteer removed.');
         loadVolunteers();
-      } catch (err) { alert('Could not remove volunteer: ' + err.message); }
+      } catch (err) { toastError('Could not remove volunteer: ' + err.message); }
     });
   } catch (err) { console.warn('[admin.js] volunteers load failed:', err); }
 }
 
 /* ============================================================
-   EVENT SUBMISSIONS (from volunteers)
-   Approving releases the certificate automatically.
+   EVENT SUBMISSIONS
    ============================================================ */
 async function loadEventSubmissions() {
   try {
@@ -233,17 +247,24 @@ async function loadEventSubmissions() {
     document.querySelectorAll('.approve-hour').forEach(btn => btn.onclick = async () => {
       try {
         await api.put(`/api/volunteers/attendance/${btn.dataset.id}`, { status: 'approved' });
+        toastSuccess('Event approved. Certificate issued.');
         loadEventSubmissions();
         loadOverview();
-      } catch (err) { alert('Approval failed: ' + err.message); }
+      } catch (err) { toastError('Approval failed: ' + err.message); }
     });
+
     document.querySelectorAll('.reject-hour').forEach(btn => btn.onclick = async () => {
-      if (!confirm(`Reject event submission from ${btn.dataset.name}?`)) return;
+      const confirmed = await confirmModal(
+        `Reject event submission from ${btn.dataset.name}?`,
+        { title: 'Reject submission', danger: true, okLabel: 'Reject' }
+      );
+      if (!confirmed) return;
       try {
         await api.put(`/api/volunteers/attendance/${btn.dataset.id}`, { status: 'rejected' });
+        toastSuccess('Event submission rejected.');
         loadEventSubmissions();
         loadOverview();
-      } catch (err) { alert('Rejection failed: ' + err.message); }
+      } catch (err) { toastError('Rejection failed: ' + err.message); }
     });
   } catch (err) { console.warn('[admin.js] event submissions load failed:', err); }
 }
@@ -276,11 +297,18 @@ async function loadEvents() {
       document.getElementById('evDate').value = ev.event_date || '';
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
+
     document.querySelectorAll('.delete-event').forEach(btn => btn.onclick = async () => {
-      if (!confirm('Delete this drive?')) return;
-      await api.del(`/api/events/${btn.dataset.id}`);
-      loadEvents();
-      loadOverview();
+      const confirmed = await confirmModal('Delete this drive?', {
+        title: 'Delete drive', danger: true, okLabel: 'Delete'
+      });
+      if (!confirmed) return;
+      try {
+        await api.del(`/api/events/${btn.dataset.id}`);
+        toastSuccess('Drive deleted.');
+        loadEvents();
+        loadOverview();
+      } catch (err) { toastError('Delete failed: ' + err.message); }
     });
   } catch (err) { console.warn('[admin.js] events load failed:', err); }
 }
@@ -302,9 +330,10 @@ document.getElementById('eventForm')?.addEventListener('submit', async (e) => {
     else await api.postForm('/api/events', fd);
     document.getElementById('eventForm').reset();
     document.getElementById('eventId').value = '';
+    toastSuccess(id ? 'Drive updated.' : 'Drive created.');
     loadEvents();
     loadOverview();
-  } catch (err) { alert('Save failed: ' + err.message); }
+  } catch (err) { toastError('Save failed: ' + err.message); }
 });
 
 document.getElementById('resetEvent')?.addEventListener('click', () => {
@@ -316,7 +345,6 @@ document.getElementById('resetEvent')?.addEventListener('click', () => {
    DONATIONS (View + Add)
    ============================================================ */
 
-/* Toggle Amount vs Items field based on selected type */
 function toggleDonationFields() {
   const type = document.getElementById('dType').value;
   const amountWrap = document.getElementById('dAmountWrap');
@@ -338,12 +366,13 @@ document.addEventListener('DOMContentLoaded', toggleDonationFields);
 /* Add-donation form submit */
 document.getElementById('addDonationForm')?.addEventListener('submit', async (e) => {
   e.preventDefault();
-  const alertBox = document.getElementById('donationAddAlert');
   const submitBtn = e.target.querySelector('button[type="submit"]');
   const originalText = submitBtn.textContent;
 
   const type = document.getElementById('dType').value;
   const isAnonymous = document.getElementById('dAnonymous').checked;
+
+  if (!type) { toastError('Please select a donation type.'); return; }
 
   const donorName = isAnonymous
     ? 'Anonymous'
@@ -362,50 +391,45 @@ document.getElementById('addDonationForm')?.addEventListener('submit', async (e)
   const proof = document.getElementById('dProof').files[0];
   if (proof) fd.append('proof', proof);
 
-  if (!type) return showAddAlert(alertBox, 'Please select a donation type.', 'error');
   if (type === 'money' && (!fd.get('amount') || parseFloat(fd.get('amount')) <= 0)) {
-    return showAddAlert(alertBox, 'Please enter a valid amount.', 'error');
+    toastError('Please enter a valid amount.');
+    return;
   }
   if (type !== 'money' && !fd.get('quantity_description')) {
-    return showAddAlert(alertBox, 'Please describe the items donated.', 'error');
+    toastError('Please describe the items donated.');
+    return;
   }
 
   try {
     submitBtn.disabled = true;
     submitBtn.textContent = 'Saving…';
 
-    // Admin can set the status directly — pass it as a query param so the backend stores it as-is
     await api.postForm(`/api/donations?status=${encodeURIComponent(fd.get('status'))}&admin=true`, fd);
 
-    showAddAlert(alertBox, 'Donation added successfully.', 'success');
+    toastSuccess('Donation added successfully.');
     e.target.reset();
     toggleDonationFields();
     loadDonations();
     loadOverview();
-    setTimeout(() => alertBox.classList.add('hidden'), 4000);
   } catch (err) {
-    showAddAlert(alertBox, err.message || 'Could not add donation.', 'error');
+    toastError(err.message || 'Could not add donation.');
   } finally {
     submitBtn.disabled = false;
     submitBtn.textContent = originalText;
   }
 });
 
-function showAddAlert(box, message, type) {
-  box.className = `alert alert-${type}`;
-  box.textContent = message;
-  box.classList.remove('hidden');
-}
-
-/* Load and render all donations */
+/* Load and render all donations — WITH image column */
 async function loadDonations() {
   try {
     const { donations } = await api.get('/api/donations');
     const tbody = document.querySelector('#donationsTable tbody');
+
     if (!donations.length) {
-      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--gray-400);padding:32px;">No donations yet.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--gray-400);padding:32px;">No donations yet.</td></tr>';
       return;
     }
+
     tbody.innerHTML = donations.map(d => {
       const donorCell = d.anonymous
         ? '<em style="color:var(--gray-400);">Anonymous</em>'
@@ -415,13 +439,22 @@ async function loadDonations() {
         ? 'R' + parseFloat(d.amount).toFixed(2)
         : (d.quantity_description || '—');
 
+      const proofCell = d.proof_path
+        ? `<a href="/api/donations/${d.id}/proof" target="_blank" class="btn btn-outline btn-sm">View</a>`
+        : '—';
+
+      const imageCell = d.item_image_path
+        ? `<a href="${encodeURI(d.item_image_path)}" target="_blank" class="btn btn-outline btn-sm">View</a>`
+        : '—';
+
       return `
         <tr>
           <td>${donorCell}</td>
           <td style="text-transform:capitalize;">${d.donation_type}</td>
           <td>${itemCell}</td>
           <td><span class="badge badge-${d.status === 'verified' || d.status === 'completed' ? 'green' : d.status === 'rejected' ? 'red' : 'gray'}">${d.status.replace(/_/g,' ')}</span></td>
-          <td>${d.proof_path ? `<a href="/api/donations/${d.id}/proof" target="_blank" class="btn btn-outline btn-sm">View</a>` : '—'}</td>
+          <td>${proofCell}</td>
+          <td>${imageCell}</td>
           <td>
             <select class="form-control donation-status" data-id="${d.id}" style="padding:6px 10px;font-size:0.8rem;">
               <option value="pending_verification" ${d.status === 'pending_verification' ? 'selected' : ''}>Pending</option>
@@ -439,16 +472,21 @@ async function loadDonations() {
     document.querySelectorAll('.donation-status').forEach(sel => sel.onchange = async () => {
       try {
         await api.put(`/api/donations/${sel.dataset.id}/status`, { status: sel.value });
-      } catch (err) { alert('Update failed: ' + err.message); }
+        toastSuccess('Donation status updated.');
+      } catch (err) { toastError('Update failed: ' + err.message); }
     });
 
     document.querySelectorAll('.delete-donation').forEach(btn => btn.onclick = async () => {
-      if (!confirm('Delete this donation record?')) return;
+      const confirmed = await confirmModal('Delete this donation record?', {
+        title: 'Delete donation', danger: true, okLabel: 'Delete'
+      });
+      if (!confirmed) return;
       try {
         await api.del(`/api/donations/${btn.dataset.id}`);
+        toastSuccess('Donation deleted.');
         loadDonations();
         loadOverview();
-      } catch (err) { alert('Delete failed: ' + err.message); }
+      } catch (err) { toastError('Delete failed: ' + err.message); }
     });
   } catch (err) { console.warn('[admin.js] donations load failed:', err); }
 }
@@ -465,8 +503,9 @@ document.getElementById('galleryForm')?.addEventListener('submit', async (e) => 
   try {
     await api.postForm('/api/gallery', fd);
     e.target.reset();
+    toastSuccess('Image uploaded.');
     loadGallery();
-  } catch (err) { alert('Upload failed: ' + err.message); }
+  } catch (err) { toastError('Upload failed: ' + err.message); }
 });
 
 async function loadGallery() {
@@ -479,10 +518,17 @@ async function loadGallery() {
         <button class="btn btn-danger btn-sm delete-gallery" data-id="${img.id}"
                 style="position:absolute;top:8px;right:8px;padding:4px 10px;font-size:0.75rem;">×</button>
       </div>`).join('');
+
     document.querySelectorAll('.delete-gallery').forEach(b => b.onclick = async () => {
-      if (!confirm('Delete image?')) return;
-      await api.del(`/api/gallery/${b.dataset.id}`);
-      loadGallery();
+      const confirmed = await confirmModal('Delete this image?', {
+        title: 'Delete image', danger: true, okLabel: 'Delete'
+      });
+      if (!confirmed) return;
+      try {
+        await api.del(`/api/gallery/${b.dataset.id}`);
+        toastSuccess('Image deleted.');
+        loadGallery();
+      } catch (err) { toastError('Delete failed: ' + err.message); }
     });
   } catch (err) { console.warn('[admin.js] gallery load failed:', err); }
 }
@@ -518,10 +564,17 @@ async function loadTestimonials() {
       document.getElementById('tstOrder').value = t.display_order;
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
+
     document.querySelectorAll('.delete-tst').forEach(b => b.onclick = async () => {
-      if (!confirm('Delete testimonial?')) return;
-      await api.del(`/api/testimonials/${b.dataset.id}`);
-      loadTestimonials();
+      const confirmed = await confirmModal('Delete this testimonial?', {
+        title: 'Delete testimonial', danger: true, okLabel: 'Delete'
+      });
+      if (!confirmed) return;
+      try {
+        await api.del(`/api/testimonials/${b.dataset.id}`);
+        toastSuccess('Testimonial deleted.');
+        loadTestimonials();
+      } catch (err) { toastError('Delete failed: ' + err.message); }
     });
   } catch (err) { console.warn('[admin.js] testimonials load failed:', err); }
 }
@@ -541,8 +594,9 @@ document.getElementById('testimonialForm')?.addEventListener('submit', async (e)
     else await api.post('/api/testimonials', body);
     document.getElementById('testimonialForm').reset();
     document.getElementById('tstId').value = '';
+    toastSuccess(id ? 'Testimonial updated.' : 'Testimonial added.');
     loadTestimonials();
-  } catch (err) { alert('Save failed: ' + err.message); }
+  } catch (err) { toastError('Save failed: ' + err.message); }
 });
 
 document.getElementById('resetTestimonial')?.addEventListener('click', () => {
@@ -572,10 +626,12 @@ async function loadEnquiries() {
           </select>
         </td>
       </tr>`).join('');
+
     document.querySelectorAll('.enquiry-status').forEach(sel => sel.onchange = async () => {
       try {
         await api.put(`/api/contact/${sel.dataset.id}/status`, { status: sel.value });
-      } catch (err) { alert('Update failed: ' + err.message); }
+        toastSuccess('Enquiry status updated.');
+      } catch (err) { toastError('Update failed: ' + err.message); }
     });
   } catch (err) { console.warn('[admin.js] enquiries load failed:', err); }
 }

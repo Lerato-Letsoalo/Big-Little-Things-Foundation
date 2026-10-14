@@ -294,6 +294,7 @@
               <th>Amount / Items</th>
               <th>Status</th>
               <th>Proof</th>
+              <th>Item Image</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -385,6 +386,7 @@
   </div>
 
   <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/ui.js"></script>
   <script src="/assets/js/admin.js"></script>
   <script>
     /* ==================== SIDEBAR TOGGLE (admin) ==================== */
@@ -410,19 +412,16 @@
       toggle?.addEventListener('click', toggleSidebar);
       backdrop?.addEventListener('click', closeSidebar);
 
-      // Close when clicking a nav link (mobile only)
       sidebar.querySelectorAll('a[data-section]').forEach(link => {
         link.addEventListener('click', () => {
           if (window.innerWidth <= 900) closeSidebar();
         });
       });
 
-      // Close on Escape
       document.addEventListener('keydown', e => {
         if (e.key === 'Escape') closeSidebar();
       });
 
-      // Reset state on resize
       window.addEventListener('resize', () => {
         if (window.innerWidth > 900) {
           sidebar.classList.remove('open');
@@ -430,7 +429,6 @@
         }
       });
 
-      // Desktop collapse toggle
       let collapsed = localStorage.getItem('blt_admin_sidebar_collapsed') === '1';
       if (collapsed) document.body.classList.add('sidebar-collapsed');
       desktopBtn?.addEventListener('click', () => {
@@ -441,5 +439,25 @@
       });
     })();
   </script>
+    <!-- ============================================================
+       CONFIRM MODAL
+       ============================================================ -->
+  <div class="modal-overlay" id="confirmModal" aria-hidden="true" role="dialog" aria-labelledby="confirmTitle">
+    <div class="modal">
+      <h2 class="modal__title" id="confirmTitle">Confirm action</h2>
+      <p id="confirmMessage" style="color:var(--gray-700);font-size:0.95rem;margin-bottom:24px;">
+        Are you sure?
+      </p>
+      <div style="display:flex;gap:12px;justify-content:flex-end;">
+        <button type="button" class="btn btn-outline" id="confirmCancel">Cancel</button>
+        <button type="button" class="btn btn-primary" id="confirmOk">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       TOAST NOTIFICATIONS
+       ============================================================ -->
+  <div class="toast-container" id="toastContainer"></div>
 </body>
 </html>
