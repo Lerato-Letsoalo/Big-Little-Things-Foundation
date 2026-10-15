@@ -1,0 +1,74 @@
+[
+  {
+    "type": "page",
+    "title": "Homepage",
+    "summary": "Welcome to Big Little Things Foundation — small acts, big impact. Learn who we are, see upcoming drives and join the movement.",
+    "url": "/index.html",
+    "category": "About BLTF",
+    "keywords": ["home", "welcome", "small acts", "impact", "foundation", "bltf"]
+  },
+  {
+    "type": "page",
+    "title": "About Us",
+    "summary": "Our story, mission, vision, values and the founders behind Big Little Things Foundation.",
+    "url": "/about.html",
+    "category": "About BLTF",
+    "keywords": ["about", "story", "mission", "vision", "values", "founders", "team", "who we are"]
+  },
+  {
+    "type": "page",
+    "title": "Projects & Drives",
+    "summary": "Current, upcoming and past community drives — food, clothing, stationery and outreach initiatives across South Africa.",
+    "url": "/projects.html",
+    "category": "Events",
+    "keywords": ["projects", "drives", "events", "campaigns", "initiatives", "easter", "spring", "stationery", "christmas"]
+  },
+  {
+    "type": "page",
+    "title": "Volunteer Information",
+    "summary": "Why volunteer with BLTF, upcoming events and what to expect.",
+    "url": "/volunteer.html",
+    "category": "Volunteering",
+    "keywords": ["volunteer", "volunteering", "join", "help", "participate", "benefits"]
+  },
+  {
+    "type": "page",
+    "title": "Volunteer Registration",
+    "summary": "Create your volunteer account, log hours, download certificates and join events.",
+    "url": "/register.html",
+    "category": "Volunteering",
+    "keywords": ["register", "sign up", "volunteer", "account", "join"]
+  },
+  {
+    "type": "page",
+    "title": "Gallery",
+    "summary": "Photo moments from our community drives, outreach days and volunteer events.",
+    "url": "/gallery.html",
+    "category": "Gallery",
+    "keywords": ["gallery", "photos", "pictures", "images", "photographs", "spring", "easter"]
+  },
+  {
+    "type": "page",
+    "title": "Contact Us",
+    "summary": "Reach the BLTF team for volunteering, donations, partnerships or general enquiries.",
+    "url": "/contact.html",
+    "category": "Contact",
+    "keywords": ["contact", "email", "phone", "reach", "message", "enquiry", "get in touch"]
+  },
+  {
+    "type": "page",
+    "title": "Donate",
+    "summary": "Make a monetary or physical donation to support BLTF's community drives. Banking details, item donations and proof of payment.",
+    "url": "/donate.html",
+    "category": "Donations",
+    "keywords": ["donate", "donation", "give", "giving", "support", "banking", "eft", "money", "food", "clothing", "sanitary"]
+  },
+  {
+    "type": "page",
+    "title": "Login",
+    "summary": "Log in to your volunteer or admin account.",
+    "url": "/login.html",
+    "category": "Account",
+    "keywords": ["login", "sign in", "account", "access"]
+  }
+]

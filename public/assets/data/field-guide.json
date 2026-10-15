@@ -1,0 +1,98 @@
+{
+  "register": {
+    "name": {
+      "description": "Your full name as you would like it to appear on your volunteer certificate.",
+      "purpose": "We use this to identify you and to personalise certificates.",
+      "required": true,
+      "example": "Lerato Dlamini"
+    },
+    "email": {
+      "description": "A valid email address that you can access.",
+      "purpose": "We use your email to send event confirmations, certificate notifications and important updates.",
+      "required": true,
+      "example": "lerato@example.com"
+    },
+    "phone": {
+      "description": "A South African phone number we can reach you on if needed.",
+      "purpose": "Optional — only used for urgent coordination on event days.",
+      "required": false,
+      "example": "071 234 5678"
+    },
+    "city": {
+      "description": "The city or town you live in.",
+      "purpose": "Helps us suggest drives that are close to you.",
+      "required": false,
+      "example": "Pretoria"
+    },
+    "skills": {
+      "description": "Any skills or interests that could help during volunteer drives.",
+      "purpose": "Helps us match you to the right kind of activity.",
+      "required": false,
+      "example": "Cooking, driving, teaching"
+    },
+    "password": {
+      "description": "A password with at least 8 characters.",
+      "purpose": "Secures your account. Keep it private.",
+      "required": true,
+      "example": "At least 8 characters"
+    }
+  },
+  "contact": {
+    "name": {
+      "description": "Your name.",
+      "purpose": "So we know who we're replying to.",
+      "required": true,
+      "example": "Lerato Dlamini"
+    },
+    "email": {
+      "description": "Your email address.",
+      "purpose": "We reply to enquiries by email.",
+      "required": true,
+      "example": "you@example.com"
+    },
+    "subject": {
+      "description": "A short label for your enquiry.",
+      "purpose": "Helps us route your message to the right person.",
+      "required": false,
+      "example": "Volunteering enquiry"
+    },
+    "message": {
+      "description": "The body of your message.",
+      "purpose": "Tell us what you'd like to know or how we can help.",
+      "required": true,
+      "example": "I'd like to know more about the Spring Drive."
+    }
+  },
+  "donate": {
+    "donor_name": {
+      "description": "Your name, or leave blank if you'd like to donate anonymously.",
+      "purpose": "So we can acknowledge your donation (unless you've chosen to remain anonymous).",
+      "required": false,
+      "example": "Full name"
+    },
+    "donor_email": {
+      "description": "Your email address.",
+      "purpose": "We send donation receipts and updates here.",
+      "required": true,
+      "example": "your@email.com"
+    },
+    "amount": {
+      "description": "The amount you'd like to donate in South African Rand.",
+      "purpose": "Choose a preset amount or enter a custom value.",
+      "required": false,
+      "example": "R100"
+    },
+    "quantity_description": {
+      "description": "Describe the items you're donating, with rough quantities.",
+      "purpose": "Helps us plan collection or drop-off.",
+      "required": false,
+      "example": "5kg rice, 3 tins pilchards, 2 bags of clothing"
+    },
+    "message": {
+      "description": "An optional message to accompany your donation.",
+      "purpose": "We love hearing from our donors.",
+      "required": false,
+      "example": "Keep up the amazing work!"
+    }
+  }
+}
