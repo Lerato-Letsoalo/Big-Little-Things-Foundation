@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+    <!-- Homepage -->
+    <url>
+        <loc>https://big-little-things-foundation.onrender.com/</loc>
+        <priority>1.0</priority>
+    </url>
+
+    <!-- About the Foundation -->
+    <url>
+        <loc>https://big-little-things-foundation.onrender.com/about.html</loc>
+        <priority>0.8</priority>
+    </url>
+
+    <!-- Projects -->
+    <url>
+        <loc>https://big-little-things-foundation.onrender.com/projects.html</loc>
+        <priority>0.8</priority>
+    </url>
+
+    <!-- Volunteering -->
+    <url>
+        <loc>https://big-little-things-foundation.onrender.com/volunteer.html</loc>
+        <priority>0.8</priority>
+    </url>
+
+    <!-- Donations -->
+    <url>
+        <loc>https://big-little-things-foundation.onrender.com/donate.html</loc>
+        <priority>0.8</priority>
+    </url>
+
+    <!-- Gallery -->
+    <url>
+        <loc>https://big-little-things-foundation.onrender.com/gallery.html</loc>
+        <priority>0.7</priority>
+    </url>
+
+    <!-- Contact -->
+    <url>
+        <loc>https://big-little-things-foundation.onrender.com/contact.html</loc>
+        <priority>0.7</priority>
+    </url>
+
+</urlset>

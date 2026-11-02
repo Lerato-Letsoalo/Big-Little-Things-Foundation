@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Private dashboard pages
+Disallow: /dashboards/
+
+# Sitemap location
+Sitemap: https://big-little-things-foundation.onrender.com/sitemap.xml
