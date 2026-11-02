@@ -7,10 +7,7 @@
   <link rel="stylesheet" href="/assets/css/styles.css">
 </head>
 <body>
-  <!-- Mobile hamburger -->
   <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle navigation">☰</button>
-
-  <!-- Backdrop -->
   <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
   <div class="dashboard-layout">
@@ -227,43 +224,41 @@
     </main>
   </div>
 
+  <div class="modal-overlay" id="confirmModal" aria-hidden="true" role="dialog" aria-labelledby="confirmTitle">
+    <div class="modal">
+      <h2 class="modal__title" id="confirmTitle">Confirm action</h2>
+      <p id="confirmMessage" style="color:var(--gray-700);font-size:0.95rem;margin-bottom:24px;">
+        Are you sure?
+      </p>
+      <div style="display:flex;gap:12px;justify-content:flex-end;">
+        <button type="button" class="btn btn-outline" id="confirmCancel">Cancel</button>
+        <button type="button" class="btn btn-primary" id="confirmOk">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+
   <script src="/assets/js/api.js"></script>
   <script src="/assets/js/ui.js"></script>
   <script src="/assets/js/volunteer.js"></script>
   <script>
-    /* ==================== SIDEBAR TOGGLE (volunteer) ==================== */
     (function setupSidebar() {
       const sidebar = document.getElementById('dashboardSidebar');
       const toggle = document.getElementById('sidebarToggle');
       const backdrop = document.getElementById('sidebarBackdrop');
       const desktopBtn = document.getElementById('desktopCollapse');
 
-      function openSidebar() {
-        sidebar.classList.add('open');
-        backdrop.classList.add('show');
-      }
-      function closeSidebar() {
-        sidebar.classList.remove('open');
-        backdrop.classList.remove('show');
-      }
-      function toggleSidebar() {
-        if (sidebar.classList.contains('open')) closeSidebar();
-        else openSidebar();
-      }
+      function openSidebar() { sidebar.classList.add('open'); backdrop.classList.add('show'); }
+      function closeSidebar() { sidebar.classList.remove('open'); backdrop.classList.remove('show'); }
+      function toggleSidebar() { sidebar.classList.contains('open') ? closeSidebar() : openSidebar(); }
 
       toggle?.addEventListener('click', toggleSidebar);
       backdrop?.addEventListener('click', closeSidebar);
-
       sidebar.querySelectorAll('a[data-section]').forEach(link => {
-        link.addEventListener('click', () => {
-          if (window.innerWidth <= 900) closeSidebar();
-        });
+        link.addEventListener('click', () => { if (window.innerWidth <= 900) closeSidebar(); });
       });
-
-      document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') closeSidebar();
-      });
-
+      document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSidebar(); });
       window.addEventListener('resize', () => {
         if (window.innerWidth > 900) {
           sidebar.classList.remove('open');
@@ -277,7 +272,6 @@
         collapsed = !collapsed;
         document.body.classList.toggle('sidebar-collapsed', collapsed);
         localStorage.setItem('blt_volunteer_sidebar_collapsed', collapsed ? '1' : '0');
-        desktopBtn.setAttribute('aria-label', collapsed ? 'Expand sidebar' : 'Collapse sidebar');
       });
     })();
   </script>

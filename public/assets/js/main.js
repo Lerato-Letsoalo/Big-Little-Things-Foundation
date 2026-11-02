@@ -322,3 +322,28 @@ window.blt = {
   renderGallery: window.renderGallery,
   renderTestimonials: window.renderTestimonials
 };
+
+/* ---------------- SUBTLE ANIMATION HELPERS ---------------- */
+function triggerContentAnimations(root) {
+  if (!root) return;
+
+  const reducedMotion = window.matchMedia(
+    '(prefers-reduced-motion: reduce)'
+  ).matches;
+
+  if (reducedMotion) return;
+
+  const animatedSelectors = [
+    '.team-card',
+    '.project-card',
+    '.gallery-item',
+    '.testimonial-carousel'
+  ];
+
+  animatedSelectors.forEach(selector => {
+    root.querySelectorAll(selector).forEach((element, index) => {
+      element.style.setProperty('--bltf-animation-index', index);
+      element.classList.add('bltf-content-enter');
+    });
+  });
+}

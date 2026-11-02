@@ -7,10 +7,7 @@
   <link rel="stylesheet" href="/assets/css/styles.css">
 </head>
 <body>
-  <!-- Mobile hamburger -->
   <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle navigation">☰</button>
-
-  <!-- Backdrop -->
   <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
   <div class="dashboard-layout">
@@ -177,15 +174,28 @@
             <div class="form-group">
               <label>Status</label>
               <select id="evStatus" class="form-control">
-                <option value="upcoming">Upcoming</option>
-                <option value="active">Active</option>
-                <option value="completed">Completed</option>
-                <option value="archived">Archived</option>
+                <option value="upcoming">Upcoming — shown on volunteer &amp; public "Upcoming"</option>
+                <option value="active">Active — shown on volunteer &amp; public "Upcoming"</option>
+                <option value="completed">Completed — shown on public "Past Projects"</option>
+                <option value="archived">Archived — hidden from public &amp; volunteers</option>
               </select>
             </div>
             <div class="form-group">
               <label>Date (leave blank for TBC)</label>
               <input type="date" id="evDate" class="form-control">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Maximum Volunteer Capacity</label>
+              <input type="number" id="evCapacity" class="form-control" min="0" placeholder="Leave blank for unlimited">
+            </div>
+            <div class="form-group">
+              <label>Registration</label>
+              <select id="evRegistrationOpen" class="form-control">
+                <option value="true">Open</option>
+                <option value="false">Closed</option>
+              </select>
             </div>
           </div>
           <div class="form-group">
@@ -199,10 +209,38 @@
         <h3>All Drives</h3>
         <table class="data-table" id="eventsTable">
           <thead>
-            <tr><th>Title</th><th>Status</th><th>Date</th><th>Actions</th></tr>
+            <tr>
+              <th>Title</th>
+              <th>Status</th>
+              <th>Date</th>
+              <th>Registrations</th>
+              <th>Actions</th>
+            </tr>
           </thead>
           <tbody></tbody>
         </table>
+
+        <!-- Registrations panel — shown when the admin clicks "View" on a drive -->
+        <div id="eventRegistrationsPanel" class="hidden" style="margin-top:24px;padding:20px;background:var(--gray-100);border-radius:var(--radius-lg);">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:12px;">
+            <div>
+              <h3 style="margin:0;font-family:var(--font-display);font-size:1.1rem;" id="regPanelTitle">Registrations</h3>
+              <p style="margin:6px 0 0;font-size:0.85rem;color:var(--gray-500);" id="regPanelSummary"></p>
+            </div>
+            <button type="button" class="btn btn-outline btn-sm" id="closeRegPanel">Close</button>
+          </div>
+          <table class="data-table" id="registrationsTable">
+            <thead>
+              <tr>
+                <th>Volunteer</th>
+                <th>Email</th>
+                <th>City</th>
+                <th>Registered</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
       </section>
 
       <!-- ==================== DONATIONS ==================== -->
@@ -383,9 +421,6 @@
     </main>
   </div>
 
-  <!-- ============================================================
-       CONFIRM MODAL — MUST be outside .dashboard-layout
-       ============================================================ -->
   <div class="modal-overlay" id="confirmModal" aria-hidden="true" role="dialog" aria-labelledby="confirmTitle">
     <div class="modal">
       <h2 class="modal__title" id="confirmTitle">Confirm action</h2>
@@ -399,48 +434,28 @@
     </div>
   </div>
 
-  <!-- ============================================================
-       TOAST NOTIFICATIONS
-       ============================================================ -->
   <div class="toast-container" id="toastContainer"></div>
 
   <script src="/assets/js/api.js"></script>
   <script src="/assets/js/ui.js"></script>
   <script src="/assets/js/admin.js"></script>
   <script>
-    /* ==================== SIDEBAR TOGGLE (admin) ==================== */
     (function setupSidebar() {
       const sidebar = document.getElementById('dashboardSidebar');
       const toggle = document.getElementById('sidebarToggle');
       const backdrop = document.getElementById('sidebarBackdrop');
       const desktopBtn = document.getElementById('desktopCollapse');
 
-      function openSidebar() {
-        sidebar.classList.add('open');
-        backdrop.classList.add('show');
-      }
-      function closeSidebar() {
-        sidebar.classList.remove('open');
-        backdrop.classList.remove('show');
-      }
-      function toggleSidebar() {
-        if (sidebar.classList.contains('open')) closeSidebar();
-        else openSidebar();
-      }
+      function openSidebar() { sidebar.classList.add('open'); backdrop.classList.add('show'); }
+      function closeSidebar() { sidebar.classList.remove('open'); backdrop.classList.remove('show'); }
+      function toggleSidebar() { sidebar.classList.contains('open') ? closeSidebar() : openSidebar(); }
 
       toggle?.addEventListener('click', toggleSidebar);
       backdrop?.addEventListener('click', closeSidebar);
-
       sidebar.querySelectorAll('a[data-section]').forEach(link => {
-        link.addEventListener('click', () => {
-          if (window.innerWidth <= 900) closeSidebar();
-        });
+        link.addEventListener('click', () => { if (window.innerWidth <= 900) closeSidebar(); });
       });
-
-      document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') closeSidebar();
-      });
-
+      document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSidebar(); });
       window.addEventListener('resize', () => {
         if (window.innerWidth > 900) {
           sidebar.classList.remove('open');
@@ -454,7 +469,6 @@
         collapsed = !collapsed;
         document.body.classList.toggle('sidebar-collapsed', collapsed);
         localStorage.setItem('blt_admin_sidebar_collapsed', collapsed ? '1' : '0');
-        desktopBtn.setAttribute('aria-label', collapsed ? 'Expand sidebar' : 'Collapse sidebar');
       });
     })();
   </script>

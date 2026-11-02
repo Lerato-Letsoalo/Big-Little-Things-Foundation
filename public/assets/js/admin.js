@@ -1,10 +1,8 @@
 /* ============================================================
    ADMIN DASHBOARD — Browser-side logic
-   Uses window.api, window.confirmModal, window.toastSuccess, window.toastError
    ============================================================ */
 console.log('[admin.js] loaded');
 
-/* ---------------- NAV ---------------- */
 const SECTIONS = ['overview','team','volunteers','hours','events','donations','gallery','testimonials','enquiries'];
 
 document.querySelectorAll('.dashboard-sidebar a[data-section]').forEach(link => {
@@ -29,13 +27,11 @@ document.querySelectorAll('.dashboard-sidebar a[data-section]').forEach(link => 
   });
 });
 
-/* ---------------- LOGOUT ---------------- */
 document.getElementById('logoutBtn')?.addEventListener('click', async () => {
   await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
   window.location.href = '/index.html';
 });
 
-/* ---------------- INIT ---------------- */
 (async function init() {
   try {
     const { user } = await api.get('/api/auth/me');
@@ -142,9 +138,7 @@ async function loadTeam() {
 
     document.querySelectorAll('.delete-team').forEach(btn => btn.onclick = async () => {
       const confirmed = await confirmModal('Delete this team member?', {
-        title: 'Delete team member',
-        danger: true,
-        okLabel: 'Delete'
+        title: 'Delete team member', danger: true, okLabel: 'Delete'
       });
       if (!confirmed) return;
       try {
@@ -270,22 +264,37 @@ async function loadEventSubmissions() {
 }
 
 /* ============================================================
-   EVENTS (Community Drives)
+   EVENTS (Community Drives) — with capacity management
    ============================================================ */
 async function loadEvents() {
   try {
     const { events } = await api.get('/api/events/all');
     const tbody = document.querySelector('#eventsTable tbody');
-    tbody.innerHTML = events.map(ev => `
-      <tr>
-        <td><strong>${ev.title}</strong><br><small style="color:var(--gray-400);">${ev.category || ''}</small></td>
-        <td><span class="badge badge-${ev.status === 'active' ? 'green' : ev.status === 'upcoming' ? 'red' : 'gray'}">${ev.status}</span></td>
-        <td>${ev.event_date ? new Date(ev.event_date).toLocaleDateString('en-ZA') : 'TBC'}</td>
-        <td>
-          <button class="btn btn-outline btn-sm edit-event" data-id="${ev.id}">Edit</button>
-          <button class="btn btn-danger btn-sm delete-event" data-id="${ev.id}">Delete</button>
-        </td>
-      </tr>`).join('');
+
+    tbody.innerHTML = events.map(ev => {
+      const cap = ev.capacity;
+      const reg = ev.registered_count || 0;
+      const regLabel = cap === null
+        ? `${reg} registered · unlimited`
+        : `${reg} / ${cap} registered · ${ev.available} available`;
+
+      return `
+        <tr>
+          <td><strong>${ev.title}</strong><br><small style="color:var(--gray-400);">${ev.category || ''}</small></td>
+          <td><span class="badge badge-${ev.status === 'active' ? 'green' : ev.status === 'upcoming' ? 'red' : 'gray'}">${ev.status}</span></td>
+          <td>${ev.event_date ? new Date(ev.event_date).toLocaleDateString('en-ZA') : 'TBC'}</td>
+          <td>
+            <span style="font-size:0.85rem;">${regLabel}</span>
+            ${cap !== null && ev.available === 0 ? '<br><span class="badge badge-red" style="margin-top:4px;">Full</span>' : ''}
+            ${cap !== null && ev.registration_open === 0 ? '<br><span class="badge badge-gray" style="margin-top:4px;">Closed</span>' : ''}
+          </td>
+          <td>
+            <button class="btn btn-outline btn-sm view-regs" data-id="${ev.id}" data-title="${ev.title.replace(/"/g,'&quot;')}">View</button>
+            <button class="btn btn-outline btn-sm edit-event" data-id="${ev.id}">Edit</button>
+            <button class="btn btn-danger btn-sm delete-event" data-id="${ev.id}">Delete</button>
+          </td>
+        </tr>`;
+    }).join('');
 
     document.querySelectorAll('.edit-event').forEach(btn => btn.onclick = () => {
       const ev = events.find(x => String(x.id) === String(btn.dataset.id));
@@ -295,6 +304,8 @@ async function loadEvents() {
       document.getElementById('evDesc').value = ev.description || '';
       document.getElementById('evStatus').value = ev.status;
       document.getElementById('evDate').value = ev.event_date || '';
+      document.getElementById('evCapacity').value = ev.capacity === null ? '' : ev.capacity;
+      document.getElementById('evRegistrationOpen').value = ev.registration_open === 1 ? 'true' : 'false';
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
@@ -310,8 +321,55 @@ async function loadEvents() {
         loadOverview();
       } catch (err) { toastError('Delete failed: ' + err.message); }
     });
+
+    document.querySelectorAll('.view-regs').forEach(btn => btn.onclick = () => {
+      showRegistrationsPanel(btn.dataset.id, btn.dataset.title);
+    });
   } catch (err) { console.warn('[admin.js] events load failed:', err); }
 }
+
+async function showRegistrationsPanel(eventId, eventTitle) {
+  const panel = document.getElementById('eventRegistrationsPanel');
+  const tbody = document.querySelector('#registrationsTable tbody');
+  const title = document.getElementById('regPanelTitle');
+  const summary = document.getElementById('regPanelSummary');
+
+  title.textContent = eventTitle;
+  summary.textContent = 'Loading...';
+  tbody.innerHTML = '';
+  panel.classList.remove('hidden');
+
+  try {
+    const [{ registrations }, { capacity }] = await Promise.all([
+      api.get(`/api/events/${eventId}/registrations`),
+      api.get(`/api/events/${eventId}/capacity`)
+    ]);
+
+    const capLabel = capacity.capacity === null
+      ? 'unlimited capacity'
+      : `capacity ${capacity.capacity}, ${capacity.available} places left`;
+    summary.textContent = `${registrations.length} registered · ${capLabel}`;
+
+    if (!registrations.length) {
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--gray-400);padding:24px;">No volunteers registered yet.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = registrations.map(r => `
+      <tr>
+        <td><strong>${r.full_name}</strong></td>
+        <td>${r.email}</td>
+        <td>${r.city || '—'}</td>
+        <td>${new Date(r.registered_at).toLocaleDateString('en-ZA')}</td>
+      </tr>`).join('');
+  } catch (err) {
+    summary.textContent = 'Could not load registrations.';
+  }
+}
+
+document.getElementById('closeRegPanel')?.addEventListener('click', () => {
+  document.getElementById('eventRegistrationsPanel').classList.add('hidden');
+});
 
 document.getElementById('eventForm')?.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -321,6 +379,8 @@ document.getElementById('eventForm')?.addEventListener('submit', async (e) => {
   fd.append('description', document.getElementById('evDesc').value);
   fd.append('status', document.getElementById('evStatus').value);
   fd.append('event_date', document.getElementById('evDate').value);
+  fd.append('capacity', document.getElementById('evCapacity').value);
+  fd.append('registration_open', document.getElementById('evRegistrationOpen').value);
   const img = document.getElementById('evImage').files[0];
   if (img) fd.append('image', img);
 
@@ -339,12 +399,12 @@ document.getElementById('eventForm')?.addEventListener('submit', async (e) => {
 document.getElementById('resetEvent')?.addEventListener('click', () => {
   document.getElementById('eventForm').reset();
   document.getElementById('eventId').value = '';
+  document.getElementById('eventRegistrationsPanel').classList.add('hidden');
 });
 
 /* ============================================================
-   DONATIONS (View + Add)
+   DONATIONS
    ============================================================ */
-
 function toggleDonationFields() {
   const type = document.getElementById('dType').value;
   const amountWrap = document.getElementById('dAmountWrap');
@@ -363,7 +423,6 @@ function toggleDonationFields() {
 document.getElementById('dType')?.addEventListener('change', toggleDonationFields);
 document.addEventListener('DOMContentLoaded', toggleDonationFields);
 
-/* Add-donation form submit */
 document.getElementById('addDonationForm')?.addEventListener('submit', async (e) => {
   e.preventDefault();
   const submitBtn = e.target.querySelector('button[type="submit"]');
@@ -419,7 +478,6 @@ document.getElementById('addDonationForm')?.addEventListener('submit', async (e)
   }
 });
 
-/* Load and render all donations — WITH image column */
 async function loadDonations() {
   try {
     const { donations } = await api.get('/api/donations');

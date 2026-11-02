@@ -46,6 +46,7 @@ app.use('/api/contact', require('./routes/contact.routes'));
 app.use('/api/dashboard', require('./routes/dashboard.routes'));
 app.use('/api/search', require('./routes/search.routes'));
 app.use('/api/ai', require('./routes/ai.routes'));
+app.use('/api/password', require('./routes/password.routes'));
 
 
 
